@@ -1,15 +1,22 @@
 package org.firstinspires.ftc.teamcode;
 
+
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ImuOrientationOnRobot;
+//import
+
+
 
 @TeleOp(name="odometryTest", group="Linear Opmode")
 public class odometryTest extends LinearOpMode {
@@ -17,6 +24,8 @@ public class odometryTest extends LinearOpMode {
     private DcMotor backRight = null;
     private DcMotor frontLeft = null;
     private DcMotor frontRight = null;
+
+    private IMU imu = null;
 
 
     static final double MAX_POS = 0.5;
@@ -28,6 +37,15 @@ public class odometryTest extends LinearOpMode {
     //variable that holds the amount of time is running
     private ElapsedTime runtime = new ElapsedTime();
 
+
+   // imu.intialize()
+     //   new IMU.Parameters(
+       //     new RevHubOrientationOnRobot(
+         //           RevHubOrientationOnRobot.LogoFacingDirection.UP,
+           //         RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
+        //)
+        //)
+          //      );
 
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
