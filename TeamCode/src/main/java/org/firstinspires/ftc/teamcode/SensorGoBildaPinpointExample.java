@@ -22,27 +22,20 @@
 
 package org.firstinspires.ftc.teamcode;
 
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcontroller.external.samples.GoBildaPinpointDriver;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 import java.util.Locale;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import java.util.Locale;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ImuOrientationOnRobot;
 
 /*
 This opmode shows how to use the goBILDA® Pinpoint Odometry Computer.
@@ -89,6 +82,18 @@ public class SensorGoBildaPinpointExample extends LinearOpMode {
     //variable that holds the amount of time is running
     private ElapsedTime runtime = new ElapsedTime();
 
+    public double angleWrap(double radians) {
+        while (radians > Math.PI) {
+            radians -= 2 * Math.PI;
+        }
+        while (radians < -Math.PI) {
+            radians += 2 * Math.PI;
+        }
+        double angle = radians*180/Math.PI;
+        // keep in mind that the result is in radians
+        return angle;
+    }
+
 
     @Override
     public void runOpMode() {
@@ -129,7 +134,7 @@ public class SensorGoBildaPinpointExample extends LinearOpMode {
         the tracking point the Y (strafe) odometry pod is. forward of center is a positive number,
         backwards is a negative number.
          */
-        odo.setOffsets(-84.0, -168.0); //these are tuned for 3110-0002-0001 Product Insight #1
+        odo.setOffsets(65.0, -130); //these are tuned for 3110-0002-0001 Product Insight #1
 
         /*
         Set the kind of pods used by your robot. If you're using goBILDA odometry pods, select either
@@ -239,18 +244,17 @@ public class SensorGoBildaPinpointExample extends LinearOpMode {
             /*
             gets the current Position (x & y in mm, and heading in degrees) of the robot, and prints it.
              */
-            Pose3D pos = odo.getPosition();
-            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, pos.getOrientation().getYaw());
-            double angle = Math.toDegrees(Math.asin((pos.getPosition().y-0.45)/Math.sqrt((pos.getPosition().y-0.45)*(pos.getPosition().y-0.45)+(pos.getPosition().x)*(pos.getPosition().x))));
+            Pose3D pos = new Pose3D(odo.getPosition().getPosition(),odo.getVelocity().getOrientation());
+            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
             telemetry.addData("Position", data);
-            telemetry.addData("Angle", pos.getOrientation().getYaw(AngleUnit.DEGREES));
 
 
             /*
             gets the current Velocity (x & y in mm/sec and heading in degrees/sec) and prints it.
              */
             Pose3D vel = odo.getVelocity();
-            String velocity = String.format(Locale.US,"{XVel: %.3f, YVel: %.3f, HVel: %.3f}", vel.getPosition().x, vel.getPosition().y, vel.getOrientation().getYaw());
+            double x = vel.getOrientation().getYaw(AngleUnit.DEGREES);
+            String velocity = String.format(Locale.US,"{XVel: %.3f, YVel: %.3f, HVel: %.3f}", vel.getPosition().x, vel.getPosition().y, x);
             telemetry.addData("Velocity", velocity);
 
             telemetry.addData("X Encoder:", odo.getEncoderX()); //gets the raw data from the X encoder
