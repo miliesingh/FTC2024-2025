@@ -26,6 +26,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.GoBildaPinpointDriver;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 import java.util.Locale;
@@ -240,7 +241,9 @@ public class SensorGoBildaPinpointExample extends LinearOpMode {
              */
             Pose3D pos = odo.getPosition();
             String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, pos.getOrientation().getYaw());
+            double angle = Math.toDegrees(Math.asin((pos.getPosition().y-0.45)/Math.sqrt((pos.getPosition().y-0.45)*(pos.getPosition().y-0.45)+(pos.getPosition().x)*(pos.getPosition().x))));
             telemetry.addData("Position", data);
+            telemetry.addData("Angle", pos.getOrientation().getYaw(AngleUnit.DEGREES));
 
 
             /*

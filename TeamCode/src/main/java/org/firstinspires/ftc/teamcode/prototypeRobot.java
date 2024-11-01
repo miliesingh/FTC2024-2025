@@ -63,10 +63,13 @@ public class prototypeRobot extends LinearOpMode {
         }
     }
     public void clawWristServoControl(){
-        if(clawWristServoCount % 2 == 0){
+        if(clawWristServoCount % 3 == 0){
             clawWristServo.setPosition(Servo.MIN_POSITION);
         }
-        if(clawWristServoCount % 2 == 1){
+        if(clawWristServoCount%3 == 1){
+            clawWristServo.setPosition(Servo.MAX_POSITION/2);
+        }
+        if(clawWristServoCount % 3 == 2){
             clawWristServo.setPosition(Servo.MAX_POSITION);
         }
     }
