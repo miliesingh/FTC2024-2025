@@ -67,7 +67,7 @@ public class prototypeRobot extends LinearOpMode {
             clawWristServo.setPosition(Servo.MIN_POSITION);
         }
         if(clawWristServoCount%3 == 1){
-            clawWristServo.setPosition(Servo.MAX_POSITION/2);
+            clawWristServo.setPosition((Servo.MAX_POSITION-Servo.MIN_POSITION)/2);
         }
         if(clawWristServoCount % 3 == 2){
             clawWristServo.setPosition(Servo.MAX_POSITION);
@@ -106,8 +106,8 @@ public class prototypeRobot extends LinearOpMode {
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         clawWristServo = hardwareMap.get(Servo.class, "clawWristServo");
 
-        leftBack.setDirection(DcMotor.Direction.REVERSE);
-        rightBack.setDirection(DcMotor.Direction.FORWARD);
+        leftBack.setDirection(DcMotor.Direction.FORWARD);
+        rightBack.setDirection(DcMotor.Direction.REVERSE);
         leftFront.setDirection(DcMotor.Direction.FORWARD);
         rightFront.setDirection(DcMotor.Direction.REVERSE);
 
@@ -136,8 +136,8 @@ public class prototypeRobot extends LinearOpMode {
             // Set up a variable for each drive wheel to save the power level for telemetry.
             double leftFrontPower  = -1*(axial + lateral + yaw);
             double rightFrontPower = -1*(axial - lateral - yaw);
-            double leftBackPower   = -1*(axial - lateral + yaw);
-            double rightBackPower  = -1*(axial + lateral - yaw);
+            double leftBackPower   = (axial - lateral + yaw);
+            double rightBackPower  = (axial + lateral - yaw);
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
@@ -156,7 +156,7 @@ public class prototypeRobot extends LinearOpMode {
             // Send calculated power to wheels
             leftFront.setPower(leftFrontPower);
             rightFront.setPower(rightFrontPower);
-            leftBack.setPower(leftBackPower);
+            leftBack.setPower(leftBackPower); // had to fix both backs to drive
             rightBack.setPower(rightBackPower);
             // adds precesion mode when bumper pressed
 
@@ -190,8 +190,10 @@ public class prototypeRobot extends LinearOpMode {
                 intakeWristServoControl();
             }
             if(gamepad1.b){
-                intakeArmServoCount++;
-                intakeArmControl();
+                intakeArmServo.setPosition(0.8);
+            }
+            if(gamepad2.b){
+                intakeArmServo.setPosition(0.2);
             }
             if(gamepad1.x){
                 intakeServoCount++;
@@ -205,6 +207,7 @@ public class prototypeRobot extends LinearOpMode {
                 clawWristServoCount++;
                 clawWristServoControl();
             }
+            intakeArmServo.setPosition(0.5);
 
         }
     }
