@@ -136,8 +136,8 @@ public class prototypeRobot extends LinearOpMode {
             // Set up a variable for each drive wheel to save the power level for telemetry.
             double leftFrontPower  = -1*(axial + lateral + yaw);
             double rightFrontPower = -1*(axial - lateral - yaw);
-            double leftBackPower   = (axial - lateral + yaw);
-            double rightBackPower  = (axial + lateral - yaw);
+            double leftBackPower   = -1*(axial - lateral + yaw);
+            double rightBackPower  = -1*(axial + lateral - yaw);
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
@@ -167,13 +167,13 @@ public class prototypeRobot extends LinearOpMode {
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
             telemetry.update();
 
-            if(gamepad1.left_trigger > 0)
+            if(gamepad1.right_trigger > 0)
             {
                 linSlideL.setDirection(DcMotorSimple.Direction.FORWARD);
                 linSlideR.setDirection(DcMotorSimple.Direction.REVERSE);
                 linSlideL.setPower(0.6);
                 linSlideR.setPower(0.6);
-            }else if(gamepad1.right_trigger > 0)
+            }else if(gamepad1.left_trigger > 0)
             {
                 linSlideL.setDirection(DcMotorSimple.Direction.REVERSE);
                 linSlideR.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -189,10 +189,10 @@ public class prototypeRobot extends LinearOpMode {
                 intakeWristCount++;
                 intakeWristServoControl();
             }
-            if(gamepad1.b){
+            if(gamepad2.right_trigger > 0){
                 intakeArmServo.setPosition(0.8);
             }
-            if(gamepad2.b){
+            if(gamepad2.left_trigger > 0){
                 intakeArmServo.setPosition(0.2);
             }
             if(gamepad1.x){
