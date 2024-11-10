@@ -179,11 +179,12 @@ public class prototypeRobot extends LinearOpMode {
                 linSlideR.setDirection(DcMotorSimple.Direction.FORWARD);
                 linSlideL.setPower(0.9);
                 linSlideR.setPower(0.9);
-            } else {
-                linSlideL.setDirection(DcMotorSimple.Direction.REVERSE);
-                linSlideR.setDirection(DcMotorSimple.Direction.FORWARD);
-                linSlideL.setPower(0.09);
-                linSlideR.setPower(0.09);
+            }
+            else{
+                linSlideL.setPower(0.1);
+                linSlideL.setDirection(DcMotorSimple.Direction.FORWARD);
+                linSlideR.setDirection(DcMotorSimple.Direction.REVERSE);
+                linSlideR.setPower(0.1);
             }
             if(gamepad1.y){
                 intakeWristCount++;
