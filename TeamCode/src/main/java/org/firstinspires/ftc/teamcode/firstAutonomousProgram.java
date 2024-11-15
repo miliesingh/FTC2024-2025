@@ -47,6 +47,17 @@ public class firstAutonomousProgram extends LinearOpMode {
         backRight.setDirection(DcMotorSimple.Direction.FORWARD);
 
     }
+    public void strafeRight(double power){
+        backLeft.setPower(power);
+        frontRight.setPower(power);
+        frontLeft.setPower(power);
+        backRight.setPower(power);
+        backLeft.setDirection(DcMotorSimple.Direction.FORWARD);
+        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        backRight.setDirection(DcMotorSimple.Direction.FORWARD);
+        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+
+    }
     public void softTurnLeft(double power){
         backLeft.setPower(power/2);
         frontRight.setPower(power);
@@ -57,7 +68,7 @@ public class firstAutonomousProgram extends LinearOpMode {
         backRight.setPower(power/2);
         frontLeft.setPower(power);
         frontRight.setPower(power/2);
-        backLeft.setPower(power/2);
+        backLeft.setPower(power);
     }
 
 
@@ -90,21 +101,6 @@ public class firstAutonomousProgram extends LinearOpMode {
         frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backRight.setDirection(DcMotorSimple.Direction.FORWARD);
-        if (pos < distance / 2) {
-            if (angle <= -5) {
-                softTurnLeft(power / 2);
-                turn = "left";
-            } else if (angle >= 5) {
-                softTurnRight(power / 2);
-                turn = "right";
-            } else if (angle < 5 && angle > -5) {
-                driveForward(power / 2);
-                turn = "forward";
-            } else {
-                stopRobot();
-            }
-        }
-        if (pos > distance / 2) {
             if (angle <= -5) {
                 softTurnLeft(power);
                 turn = "left";
@@ -117,7 +113,6 @@ public class firstAutonomousProgram extends LinearOpMode {
             } else {
                 stopRobot();
             }
-        }
 
         telemetry.addData("turn", turn);
         telemetry.update();
@@ -128,24 +123,6 @@ public class firstAutonomousProgram extends LinearOpMode {
         frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backRight.setDirection(DcMotorSimple.Direction.FORWARD);
-        if (pos>distance/2){
-            if(angle <=-5){
-                softTurnLeft(power/2);
-                turn = "left";
-            }
-            else if (angle>= 5) {
-                softTurnRight(power/2);
-                turn = "right";
-            }
-            else if (angle <5 && angle > -5) {
-                driveForward(power/2);
-                turn = "forward";
-            }
-            else{
-                stopRobot();
-            }
-        }
-        if (pos<distance/2){
             if(angle <=-5){
                 softTurnLeft(power);
                 turn = "left";
@@ -161,7 +138,6 @@ public class firstAutonomousProgram extends LinearOpMode {
             else{
                 stopRobot();
             }
-        }
 
         telemetry.addData("turn", turn);
         telemetry.update();
@@ -198,6 +174,17 @@ public class firstAutonomousProgram extends LinearOpMode {
 //         }
 
     }
+    public void turnDegrees(double nAngle, double power){
+        odo.resetPosAndIMU(); sleep(250);
+        while (true) {
+            Pose3D pos = new Pose3D(odo.getPosition().getPosition(),odo.getVelocity().getOrientation());
+            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading()))); telemetry.addData("Position", data);
+            double angle = (angleWrap(odo.getHeading())); odo.bulkUpdate(); turnRight(power);
+            if (Math.abs(angle)>nAngle){ break; }
+            telemetry.update();
+        }
+        stopRobot();
+    }
     public void driveDistanceForward(double power, int distance, double xPlace){
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -208,21 +195,21 @@ public class firstAutonomousProgram extends LinearOpMode {
         frontLeft.setPower(power);
         backRight.setPower(power);
         if (xPlace > distance){
-                if (xPlace > distance/2) {
-                    backLeft.setPower(power);
-                    frontRight.setPower(power);
-                    frontLeft.setPower(power);
-                    backRight.setPower(power);
-                    telemetry.update();
-                }
-                if (xPlace < distance/2){
-                    backLeft.setPower(power/2);
-                    frontRight.setPower(power/2);
-                    frontLeft.setPower(power/2);
-                    backRight.setPower(power/2);
-                    telemetry.update();
-                }
+            if (xPlace > distance/2) {
+                backLeft.setPower(power);
+                frontRight.setPower(power);
+                frontLeft.setPower(power);
+                backRight.setPower(power);
+                telemetry.update();
             }
+            if (xPlace < distance/2){
+                backLeft.setPower(power/2);
+                frontRight.setPower(power/2);
+                frontLeft.setPower(power/2);
+                backRight.setPower(power/2);
+                telemetry.update();
+            }
+        }
         else {
             backLeft.setPower(0);
             frontRight.setPower(0);
@@ -293,22 +280,41 @@ public class firstAutonomousProgram extends LinearOpMode {
                 telemetry.update();
             }
             stopRobot();
-            sleep(250);
             odo.resetPosAndIMU();
+            sleep(1250);
             while (true) {
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(),odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
                 telemetry.addData("Position", data);
                 angle = (angleWrap(odo.getHeading()));
                 odo.bulkUpdate();
-                driveBackwardCorrection(angle, -0.4, -203, pos.getPosition().x);
-                if(pos.getPosition().x < -203) {
+                driveBackwardCorrection(angle, -0.4, -120, pos.getPosition().x);
+                if(pos.getPosition().x < -120) {
                     break;
                 }
                 telemetry.update();
             }
             stopRobot();
             telemetry.update();
+            odo.resetPosAndIMU();
+            sleep(250);
+            while (true) {
+                Pose3D pos = new Pose3D(odo.getPosition().getPosition(),odo.getVelocity().getOrientation());
+                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+                telemetry.addData("Position", data);
+                angle = (angleWrap(odo.getHeading()));
+                odo.bulkUpdate();
+                strafeRight(0.4);
+                if(pos.getPosition().y > 900) {
+                    break;
+                }
+                telemetry.update();
+            }
+            stopRobot();
+            telemetry.update();
+            odo.resetPosAndIMU();
+            sleep(250);
+            turnDegrees(175, 0.5);
             //DRIVE_DISTANCE_FORWARD(28,1.2);
             //DRIVE_DISTANCE_LEFT(20.4f);
             //DRIVE_DISTANCE_FORWARD(-24,1.2);
