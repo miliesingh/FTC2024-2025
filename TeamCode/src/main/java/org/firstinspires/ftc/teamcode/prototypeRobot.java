@@ -4,7 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="prototypeRobot", group="Linear Opmode")
@@ -17,15 +19,16 @@ public class prototypeRobot extends LinearOpMode {
     private DcMotor linSlideL = null;
     private Servo intakeArmServo = null;
     private Servo intakeServo = null;
-    private Servo intakeWristServo = null;
+    private ServoImplEx intakeWristServo = null;
+    PwmControl.PwmRange range = new PwmControl.PwmRange(900, 2100);
     private Servo clawServo = null;
     private Servo clawWristServo = null;
 
-    private int intakeArmServoCount = 0;
-    private int intakeServoCount = 0;
-    private int intakeWristCount = 0 ;
-    private int clawCount = 0;
-    private int clawWristServoCount = 0;
+    int intakeArmServoCount = 0;
+    int intakeServoCount = 0;
+    int intakeWristCount = 0 ;
+    int clawCount = 0;
+    int clawWristServoCount = 0;
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -50,13 +53,13 @@ public class prototypeRobot extends LinearOpMode {
     }
     public void intakeServoControl(){
         if(intakeServoCount % 4 == 0){
-            intakeServo.setPosition(0.6);
+            intakeServo.setPosition(0.7);
         }
         if(intakeServoCount % 4 == 1){
             intakeServo.setPosition(0.5);
         }
         if(intakeServoCount % 4 == 2){
-            intakeServo.setPosition(0.4);
+            intakeServo.setPosition(0.3);
         }
         if(intakeServoCount % 4 == 3){
             intakeServo.setPosition(0.5);
@@ -101,7 +104,8 @@ public class prototypeRobot extends LinearOpMode {
         linSlideL=  hardwareMap.get(DcMotor.class, "linSlideL");
         linSlideR = hardwareMap.get(DcMotor.class, "linSlideR");
         intakeArmServo = hardwareMap.get(Servo.class, "intakeArmServo");
-        intakeWristServo = hardwareMap.get(Servo.class, "intakeWristServo");
+        intakeWristServo = hardwareMap.get(ServoImplEx.class, "intakeWristServo");
+        intakeWristServo.setPwmRange(range);
         intakeServo = hardwareMap.get(Servo.class, "intakeServo");
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         clawWristServo = hardwareMap.get(Servo.class, "clawWristServo");
@@ -115,10 +119,9 @@ public class prototypeRobot extends LinearOpMode {
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-
+        intakeWristServo.setPosition(0);
         waitForStart();
         runtime.reset();
-
         while (opModeIsActive()){
             // Show the elapsed game time and wheel power.
             // telemetry.addData(countPixel);
@@ -165,6 +168,7 @@ public class prototypeRobot extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+            telemetry.addData("intake wrust", intakeWristCount);
             telemetry.update();
 
             if(gamepad1.right_trigger > 0)
@@ -181,35 +185,43 @@ public class prototypeRobot extends LinearOpMode {
                 linSlideR.setPower(0.9);
             }
             else{
-                linSlideL.setPower(0.1);
+                linSlideL.setPower(0.05);
                 linSlideL.setDirection(DcMotorSimple.Direction.FORWARD);
                 linSlideR.setDirection(DcMotorSimple.Direction.REVERSE);
-                linSlideR.setPower(0.1);
+                linSlideR.setPower(0.05);
             }
-            if(gamepad1.y){
-                intakeWristCount++;
-                intakeWristServoControl();
+            if(gamepad2.a){
+            intakeWristServo.setPosition(1);
+            }
+            if(gamepad2.b){
+                intakeWristServo.setPosition(0.0);
             }
             if(gamepad2.right_trigger > 0){
-                intakeArmServo.setPosition(0.8);
+                intakeArmServo.setPosition(0.9);
             }
             if(gamepad2.left_trigger > 0){
-                intakeArmServo.setPosition(0.2);
+                intakeArmServo.setPosition(0.1);
             }
-            if(gamepad1.x){
-                intakeServoCount++;
-                intakeServoControl();
+            if(gamepad2.left_trigger == 0 && gamepad2.right_trigger == 0){
+                intakeArmServo.setPosition(0.5);
+            }
+            if(gamepad2.left_bumper){
+                intakeServo.setPosition(1.0);
+            }
+            if(gamepad2.right_bumper){
+                intakeServo.setPosition(0.0);
+            }
+            if(gamepad2.x){
+                intakeServo.setPosition(0.5);
             }
             if(gamepad1.a){
                 clawCount++;
                 clawControl();
             }
-            if(gamepad1.right_bumper == true){
+            if(gamepad1.right_bumper){
                 clawWristServoCount++;
                 clawWristServoControl();
             }
-            intakeArmServo.setPosition(0.5);
-
         }
     }
 }
