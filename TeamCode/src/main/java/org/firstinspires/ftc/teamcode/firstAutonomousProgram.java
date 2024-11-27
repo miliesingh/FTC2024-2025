@@ -484,7 +484,7 @@ public class firstAutonomousProgram extends LinearOpMode {
              stopRobot();
             telemetry.update();
 
-            while (true) { // turn the 180
+            while (true) { // turn the 180 degrees
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
                 telemetry.addData("Position", data);
