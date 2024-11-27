@@ -299,7 +299,7 @@ public class firstAutonomousProgram extends LinearOpMode {
             stopRobot();
             telemetry.update();
             sleep(333);
-            while (true) {
+            while (true) { // strafe to the blocks place
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
                 telemetry.addData("Position", data);
@@ -320,7 +320,7 @@ public class firstAutonomousProgram extends LinearOpMode {
             stopRobot();
             odo.resetPosAndIMU();
             sleep(333);
-            while (true) {
+            while (true) { // go up to the 1st block
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
                 telemetry.addData("Position", data);
@@ -340,7 +340,7 @@ public class firstAutonomousProgram extends LinearOpMode {
             sleep(333);
             telemetry.update();
             stopRobot();
-            while (true) {
+            while (true) { // strafe over 1st block
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
                 telemetry.addData("Position", data);
@@ -358,7 +358,7 @@ public class firstAutonomousProgram extends LinearOpMode {
             telemetry.update();
             stopRobot();
             sleep(333);
-            while (true) {
+            while (true) { // push 1st block into the zone
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
                 telemetry.addData("Position", data);
@@ -374,7 +374,7 @@ public class firstAutonomousProgram extends LinearOpMode {
             telemetry.update();
             odo.resetPosAndIMU();
             sleep(333);
-            while (true) {
+            while (true) { // go up for the second block
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
                 telemetry.addData("Position", data);
@@ -392,7 +392,7 @@ public class firstAutonomousProgram extends LinearOpMode {
             stopRobot();
             telemetry.update();
             sleep(500);
-            while (true) {
+            while (true) { // strafe over the 2nd block
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
                 telemetry.addData("Position", data);
@@ -410,14 +410,14 @@ public class firstAutonomousProgram extends LinearOpMode {
             stopRobot();
             telemetry.update();
             sleep(333);
-            while (true) {
+            while (true) { // push the second block into the zone
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
                 telemetry.addData("Position", data);
                 angle = (angleWrap(odo.getHeading()));
                 odo.bulkUpdate();
                 driveBackwardCorrection(angle, -0.6, 250, pos.getPosition().x);
-                if (pos.getPosition().x <= 20) {
+                if (pos.getPosition().x <= 30) {
                     break;
                 }
                 telemetry.update();
@@ -425,8 +425,10 @@ public class firstAutonomousProgram extends LinearOpMode {
             stopRobot();
             telemetry.update();
             odo.resetPosAndIMU();
+            stopRobot();
             sleep(500);
-            while (true) {
+            telemetry.update();
+            while (true) { // move up a little for the human player
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
                 telemetry.addData("Position", data);
@@ -444,7 +446,7 @@ public class firstAutonomousProgram extends LinearOpMode {
             stopRobot();
             telemetry.update();
             turnDegrees(10, -0.4);
-            while (true) {
+            while (true) { // turn the 180
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
                 telemetry.addData("Position", data);
@@ -462,7 +464,7 @@ public class firstAutonomousProgram extends LinearOpMode {
             stopRobot();
             odo.resetPosAndIMU();
             sleep(500);
-            while (true) {
+            while (true) { // grab the block
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
                 telemetry.addData("Position", data);
@@ -479,7 +481,7 @@ public class firstAutonomousProgram extends LinearOpMode {
             }
             telemetry.update();
             stopRobot();
-            while (true) {
+            while (true) { // back up with said block
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
                 telemetry.addData("Position", data);
@@ -496,7 +498,7 @@ public class firstAutonomousProgram extends LinearOpMode {
             odo.resetPosAndIMU();
             sleep(500);
             stopRobot();
-            while (true) {
+            while (true) { // strafe back to the hanging thing
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
                 telemetry.addData("Position", data);
@@ -514,7 +516,7 @@ public class firstAutonomousProgram extends LinearOpMode {
             telemetry.update();
             stopRobot();
             turnDegrees(10, 0.4);
-            while (true) {
+            while (true) { // turn to face said hanging thing
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
                 telemetry.addData("Position", data);
@@ -531,7 +533,7 @@ public class firstAutonomousProgram extends LinearOpMode {
             }
             telemetry.update();
             stopRobot();
-            while (true) {
+            while (true) { // put the sample on the hanging thing
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
                 telemetry.addData("Position", data);
@@ -549,7 +551,7 @@ public class firstAutonomousProgram extends LinearOpMode {
             stopRobot();
             sleep(3000);
             telemetry.update();
-            while (true) {
+            while (true) { // back up from said hanging thing
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
                 telemetry.addData("Position", data);
