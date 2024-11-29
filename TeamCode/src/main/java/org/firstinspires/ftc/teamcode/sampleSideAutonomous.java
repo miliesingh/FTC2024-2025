@@ -15,15 +15,70 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import java.util.Locale;
 
 // This is far side Blue
-@Autonomous(name="sampleSide", group="Auto2024")
+@Autonomous(name="basketSide", group="Auto2024")
 public class sampleSideAutonomous extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor frontRight = null;
-    private DcMotor frontLeft = null;
-    private DcMotor backRight = null;
-    private DcMotor backLeft = null;
+    private DcMotor rightFront = null;
+    private DcMotor leftFront = null;
+    private DcMotor rightBack = null;
+    private DcMotor leftBack = null;
+
+    private DcMotor linSlideR = null;
+    private DcMotor linSlideL = null;
+    private Servo clawWristServo = null;
+    private Servo clawServo = null;
+
 
     GoBildaPinpointDriver odo;
+
+    public void LINEAR_SLIDE_DRIVE(float distance_in_in, double power) {
+        float ticksPerInch = 450.149432158f;
+        float f_ticks = ticksPerInch * distance_in_in;
+        int ticks = Math.round(f_ticks);
+        //753.1 ticks per revolution
+        //1.673 in per revolution (circumference)
+        //450.149432158 ticks per in
+        if (power > 0) {
+            //go up
+            linSlideL.setDirection(DcMotorSimple.Direction.FORWARD);
+            linSlideR.setDirection(DcMotorSimple.Direction.REVERSE);
+        } else {
+            //go down
+            linSlideL.setDirection(DcMotorSimple.Direction.REVERSE);
+            linSlideR.setDirection(DcMotorSimple.Direction.FORWARD);
+        }
+
+        linSlideL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linSlideL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linSlideL.setPower(power);
+        linSlideL.setTargetPosition(ticks);
+        linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linSlideR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linSlideR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linSlideR.setPower(power);
+        linSlideR.setTargetPosition(ticks);
+        linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        telemetry.addData("slide", "> is running to position");
+        telemetry.update();
+        while ((linSlideR.getCurrentPosition() <= linSlideR.getTargetPosition() - 50) && linSlideL.getCurrentPosition() <= (linSlideL.getTargetPosition() - 50)) {
+            //Wait until job is finished
+            telemetry.addData("slide", "> is strafing to position");
+            telemetry.addData("ticks", ">" +
+                    linSlideR.getCurrentPosition() + " need to get to " +
+                    linSlideR.getTargetPosition());
+            telemetry.addData("slide", "> is strafing to position");
+            telemetry.addData("ticks", ">" + linSlideL.getCurrentPosition() + " need to get to " + linSlideL.getTargetPosition());
+            telemetry.update();
+        }
+    }
+
+
+    //  public void getData() {
+    //     sensorRange1.getDistance(DistanceUnit.CM);
+    //  sensorRange2.getDistance(DistanceUnit.CM);
+    //  }
+
 
     public double angleWrap(double radians) {
         while (radians > Math.PI) {
@@ -32,75 +87,82 @@ public class sampleSideAutonomous extends LinearOpMode {
         while (radians < -Math.PI) {
             radians += 2 * Math.PI;
         }
-        double angle = radians*180/Math.PI;
+        double angle = radians * 180 / Math.PI;
         // keep in mind that the result is in radians
         return angle;
     }
-    public void turnLeft(double power){
-        backLeft.setPower(power);
-        frontRight.setPower(power);
-        frontLeft.setPower(power);
-        backRight.setPower(power);
-        backLeft.setDirection(DcMotorSimple.Direction.FORWARD);
-        frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
-        frontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
-        backRight.setDirection(DcMotorSimple.Direction.FORWARD);
+
+    public void turnLeft(double power) {
+        leftBack.setPower(power);
+        rightFront.setPower(power);
+        leftFront.setPower(power);
+        rightBack.setPower(power);
+        leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
 
     }
-    public void strafeRight(double power){
-        backLeft.setPower(power);
-        frontRight.setPower(power);
-        frontLeft.setPower(power);
-        backRight.setPower(power);
-        backLeft.setDirection(DcMotorSimple.Direction.FORWARD);
-        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRight.setDirection(DcMotorSimple.Direction.FORWARD);
-        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+
+    public void strafeRight(double power) {
+        leftBack.setPower(power);
+        rightFront.setPower(power);
+        leftFront.setPower(power);
+        rightBack.setPower(power);
+        leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
     }
-    public void softTurnLeft(double power){
-        backLeft.setPower(power/2);
-        frontRight.setPower(power);
-        frontLeft.setPower(power/2);
-        backRight.setPower(power);
+
+    public void softTurnLeft(double power) {
+        leftBack.setPower(power / 2);
+        rightFront.setPower(power);
+        leftFront.setPower(power / 2);
+        rightBack.setPower(power);
     }
-    public void softTurnRight(double power){
-        backRight.setPower(power/2);
-        frontLeft.setPower(power);
-        frontRight.setPower(power/2);
-        backLeft.setPower(power);
+
+    public void softTurnRight(double power) {
+        rightBack.setPower(power / 2);
+        leftFront.setPower(power);
+        rightFront.setPower(power / 2);
+        leftBack.setPower(power);
     }
 
 
-    public void turnRight(double power){
-        backLeft.setPower(power);
-        frontRight.setPower(power);
-        frontLeft.setPower(power);
-        backRight.setPower(power);
-        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+    public void turnRight(double power) {
+        leftBack.setPower(power);
+        rightFront.setPower(power);
+        leftFront.setPower(power);
+        rightBack.setPower(power);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
     }
-    public void stopRobot(){
-        backLeft.setPower(0);
-        frontRight.setPower(0);
-        frontLeft.setPower(0);
-        backRight.setPower(0);
+
+    public void stopRobot() {
+        leftBack.setPower(0);
+        rightFront.setPower(0);
+        leftFront.setPower(0);
+        rightBack.setPower(0);
     }
-    public void driveForward(double power){
-        backLeft.setPower(power);
-        frontRight.setPower(power);
-        frontLeft.setPower(power);
-        backRight.setPower(power);
+
+    public void driveForward(double power) {
+        leftBack.setPower(power);
+        rightFront.setPower(power);
+        leftFront.setPower(power);
+        rightBack.setPower(power);
     }
+
     public void driveBackwardCorrection(double angle, double power, int distance, double pos) {
         String turn = "";
-        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
-        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRight.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
         driveForward(power);
 //            if (angle <= -5) {
 //                softTurnLeft(power);
@@ -118,12 +180,13 @@ public class sampleSideAutonomous extends LinearOpMode {
         telemetry.addData("turn", turn);
         telemetry.update();
     }
-    public void driveForwardCorrection(double angle, double power, int distance, double pos){
+
+    public void driveForwardCorrection(double angle, double power, int distance, double pos) {
         String turn = "";
-        backLeft.setDirection(DcMotorSimple.Direction.FORWARD);
-        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        frontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
-        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
         driveForward(-power);
 //            if(angle <=-5){
 //                softTurnLeft(-power);
@@ -146,101 +209,111 @@ public class sampleSideAutonomous extends LinearOpMode {
 
 
 //        if(yPos > 3){
-//            backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-//            frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-//            backRight.setDirection(DcMotorSimple.Direction.REVERSE);
-//            frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+//            leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+//            rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+//            rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+//            leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
 //        }
 //        if(yPos < 3){
-//            backLeft.setDirection(DcMotorSimple.Direction.FORWARD);
-//            frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
-//            backRight.setDirection(DcMotorSimple.Direction.FORWARD);
-//            frontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
+//            leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
+//            rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
+//            rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
+//            leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
 //        }
 //         if(angle <-5){
-//             backLeft.setDirection(DcMotorSimple.Direction.FORWARD);
-//             frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
-//             frontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
-//             backRight.setDirection(DcMotorSimple.Direction.FORWARD);
+//             leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
+//             rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
+//             leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
+//             rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
 //         } else if (angle > 5) {
-//             backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-//             frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-//             frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-//             backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+//             leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+//             rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+//             leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+//             rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
 //         }
 //         else {
-//             backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-//             frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
-//             frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-//             backRight.setDirection(DcMotorSimple.Direction.FORWARD);
+//             leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+//             rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
+//             leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+//             rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
 //         }
 
     }
-    public void turnDegrees(double nAngle, double power){
+
+    public void turnDegrees(double nAngle, double power) {
         while (true) {
-            Pose3D pos = new Pose3D(odo.getPosition().getPosition(),odo.getVelocity().getOrientation());
-            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading()))); telemetry.addData("Position", data);
-            double angle = (angleWrap(odo.getHeading())); odo.bulkUpdate(); turnRight(power);
-            if (Math.abs(angle)>nAngle) {
+            Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+            telemetry.addData("Position", data);
+            double angle = (angleWrap(odo.getHeading()));
+            odo.bulkUpdate();
+            turnRight(power);
+            if (Math.abs(angle) > nAngle) {
                 break;
             }
             telemetry.update();
         }
         stopRobot();
     }
-    public void driveDistanceForward(double power, int distance, double xPlace){
-        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
-        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRight.setDirection(DcMotorSimple.Direction.FORWARD);
-        backLeft.setPower(power);
-        frontRight.setPower(power);
-        frontLeft.setPower(power);
-        backRight.setPower(power);
-        if (xPlace > distance){
-            if (xPlace > distance/2) {
-                backLeft.setPower(power);
-                frontRight.setPower(power);
-                frontLeft.setPower(power);
-                backRight.setPower(power);
+
+    public void driveDistanceForward(double power, int distance, double xPlace) {
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftBack.setPower(power);
+        rightFront.setPower(power);
+        leftFront.setPower(power);
+        rightBack.setPower(power);
+        if (xPlace > distance) {
+            if (xPlace > distance / 2) {
+                leftBack.setPower(power);
+                rightFront.setPower(power);
+                leftFront.setPower(power);
+                rightBack.setPower(power);
                 telemetry.update();
             }
-            if (xPlace < distance/2){
-                backLeft.setPower(power/2);
-                frontRight.setPower(power/2);
-                frontLeft.setPower(power/2);
-                backRight.setPower(power/2);
+            if (xPlace < distance / 2) {
+                leftBack.setPower(power / 2);
+                rightFront.setPower(power / 2);
+                leftFront.setPower(power / 2);
+                rightBack.setPower(power / 2);
                 telemetry.update();
             }
-        }
-        else {
-            backLeft.setPower(0);
-            frontRight.setPower(0);
-            frontLeft.setPower(0);
-            backRight.setPower(0);
+        } else {
+            leftBack.setPower(0);
+            rightFront.setPower(0);
+            leftFront.setPower(0);
+            rightBack.setPower(0);
         }
     }
 
     @Override
-    public void runOpMode(){
+    public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        odo = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
+        odo = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
         odo.resetPosAndIMU();
 
 
-        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
-        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
-        backRight = hardwareMap.get(DcMotor.class, "backRight");
-        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
-        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
+        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
+        rightBack = hardwareMap.get(DcMotor.class, "rightBack");
+        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        linSlideL = hardwareMap.get(DcMotor.class, "linSlideL");
+        linSlideR = hardwareMap.get(DcMotor.class, "linSlideR");
+        linSlideL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        linSlideR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        clawWristServo = hardwareMap.get(Servo.class, "clawWristServo");
+        clawServo = hardwareMap.get(Servo.class, "clawServo");
         waitForStart();
         runtime.reset();
         odo.setOffsets(65.0, -130); //these are tuned for 3110-0002-0001 Product Insight #1
@@ -262,175 +335,163 @@ public class sampleSideAutonomous extends LinearOpMode {
          */
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
-
+        clawServo.setPosition(Servo.MIN_POSITION);
         odo.resetPosAndIMU();
         double angle = angleWrap(odo.getHeading());
         if (opModeIsActive()) {
+            clawServo.setPosition(Servo.MIN_POSITION);
+            clawWristServo.setPosition(Servo.MAX_POSITION);
             odo.bulkUpdate();
-
+            sleep(333);
+            LINEAR_SLIDE_DRIVE(8f, 0.9);
 ////            driveDistanceForward(0.6, -500, pos.getPosition().x);
 //            driveForward(0.2, angleWrap(odo.getHeading()));
-            while (true) {
-                Pose3D pos = new Pose3D(odo.getPosition().getPosition(),odo.getVelocity().getOrientation());
+            while (true) { // go forward for the initial hang
+                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
                 telemetry.addData("Position", data);
                 angle = (angleWrap(odo.getHeading()));
                 odo.bulkUpdate();
-                driveForwardCorrection(angle, 0.6, 600, pos.getPosition().x);
-                if(pos.getPosition().x >= 600) {
+                driveForwardCorrection(angle, 0.4, 500, pos.getPosition().x);
+                if (pos.getPosition().x >= 560) {
                     break;
                 }
                 telemetry.update();
             }
             stopRobot();
-            while (angle >115){
-                Pose3D pos = new Pose3D(odo.getPosition().getPosition(),odo.getVelocity().getOrientation());
-                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-                telemetry.addData("Position", data);
-                angle = (angleWrap(odo.getHeading()));
-                odo.bulkUpdate();;
-                turnLeft(0.2);
-                telemetry.update();
-            }
-            stopRobot();
-            odo.resetPosAndIMU();
-            sleep(3000);
-            while (true) {
-                Pose3D pos = new Pose3D(odo.getPosition().getPosition(),odo.getVelocity().getOrientation());
+            LINEAR_SLIDE_DRIVE(3f, -0.7);
+            clawServo.setPosition(0.5);
+            clawWristServo.setPosition(Servo.MIN_POSITION);
+            clawServo.setPosition(Servo.MAX_POSITION);
+            while (true) { // back up from the hang
+                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
                 telemetry.addData("Position", data);
                 angle = (angleWrap(odo.getHeading()));
                 odo.bulkUpdate();
-                driveBackwardCorrection(angle, -0.6, -10, pos.getPosition().x);
-                if(pos.getPosition().x <= -10) {
+                driveBackwardCorrection(angle, -0.2, 590, pos.getPosition().x);
+                if (pos.getPosition().x <= 559) {
                     break;
                 }
                 telemetry.update();
             }
-//            for (int j = 0; j < 2; j++) {
-                stopRobot();
+            stopRobot();
+            clawServo.setPosition(Servo.MIN_POSITION);
+            LINEAR_SLIDE_DRIVE(5f, -1);
+            telemetry.update();
+            while (true) { // strafe to the first block
+                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+                telemetry.addData("Position", data);
+                angle = (angleWrap(odo.getHeading()));
+                odo.bulkUpdate();
+                strafeRight(-0.4);
+                if (pos.getPosition().y <= -960) {
+                    break;
+                }
                 telemetry.update();
-                odo.resetPosAndIMU();
-                sleep(333);
-                while (true) {
-                    Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-                    String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-                    telemetry.addData("Position", data);
-                    angle = (angleWrap(odo.getHeading()));
-                    odo.bulkUpdate();
-                    strafeRight(-0.4);
-                    if (pos.getPosition().y <= -762) {
+            }
+            stopRobot();
+            telemetry.update();
+            while (true) { // angle correction
+                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+                telemetry.addData("Position", data);
+                angle = (angleWrap(odo.getHeading()));
+                odo.bulkUpdate();
+                if (angle < 2) {
+                    break;
+                }
+                turnRight(0.2);
+                if (angle < 2) {
+                    break;
+                }
+                telemetry.update();
+            }
+            stopRobot();
+            telemetry.update();
+            clawServo.setPosition(Servo.MAX_POSITION);
+            while (true) { // getting block
+                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+                telemetry.addData("Position", data);
+                angle = (angleWrap(odo.getHeading()));
+                odo.bulkUpdate();
+                driveForwardCorrection(angle, 0.4, 500, pos.getPosition().x);
+                if (pos.getPosition().x >= 630) {
+                    break;
+                }
+                telemetry.update();
+            }
+            stopRobot();
+            telemetry.update();
+            clawServo.setPosition(Servo.MIN_POSITION);
+            sleep(500);
+            clawWristServo.setPosition(Servo.MAX_POSITION);
+            while (true) { // back up from getting block
+                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+                telemetry.addData("Position", data);
+                angle = (angleWrap(odo.getHeading()));
+                odo.bulkUpdate();
+                driveBackwardCorrection(angle, -0.4, 590, pos.getPosition().x);
+                if (pos.getPosition().x <= 559) {
+                    break;
+                }
+                telemetry.update();
+            }
+            stopRobot();
+            telemetry.update();
+            while (true) { // turn the 180 degrees
+                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+                telemetry.addData("Position", data);
+                angle = (angleWrap(odo.getHeading()));
+                odo.bulkUpdate();
+                if (angle > 0){
+
+                    if (angle > 173) {
                         break;
                     }
-                    telemetry.update();
-                }
-                stopRobot();
-                telemetry.update();
-                sleep(333);
-//                turnDegrees(150, 0.6);
-//                stopRobot();
-//                telemetry.update();
-//                odo.resetPosAndIMU();
-//                sleep(500);
-//                while (true) {
-//                    Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-//                    String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-//                    telemetry.addData("Position", data);
-//                    angle = (angleWrap(odo.getHeading()));
-//                    odo.bulkUpdate();
-//                    driveForwardCorrection(angle, 0.6, 60, pos.getPosition().x);
-//                    if (pos.getPosition().x >= 60) {
-//                        break;
-//                    }
-//                    telemetry.update();
-//                }
-//                telemetry.update();
-//                stopRobot();
-//                odo.resetPosAndIMU();
-//                sleep(1500);
-//                while (true) {
-//                    Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-//                    String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-//                    telemetry.addData("Position", data);
-//                    angle = (angleWrap(odo.getHeading()));
-//                    odo.bulkUpdate();
-//                    driveBackwardCorrection(angle, -0.6, -10, pos.getPosition().x);
-//                    if (pos.getPosition().x <= -10) {
-//                        break;
-//                    }
-//                    telemetry.update();
-//                }
-//                stopRobot();
-//                telemetry.update();
-//                odo.resetPosAndIMU();
-//                sleep(333);
-//                while (true) {
-//                    Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-//                    String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-//                    telemetry.addData("Position", data);
-//                    angle = (angleWrap(odo.getHeading()));
-//                    odo.bulkUpdate();
-//                    strafeRight(0.4);
-//                    if (pos.getPosition().y >= 900 + (60 * j)) {
-//                        break;
-//                    }
-//                    telemetry.update();
-//                }
-//                stopRobot();
-//                telemetry.update();
-//                sleep(333);
-//                turnDegrees(160, -0.6);
-//                stopRobot();
-//                telemetry.update();
-//                odo.resetPosAndIMU();
-//                sleep(333);
-//                while (true) {
-//                    Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-//                    String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-//                    telemetry.addData("Position", data);
-//                    angle = (angleWrap(odo.getHeading()));
-//                    odo.bulkUpdate();
-//                    driveForwardCorrection(angle, 0.6, 60, pos.getPosition().x);
-//                    if (pos.getPosition().x >= 80) {
-//                        break;
-//                    }
-//                    telemetry.update();
-//                }
-//                stopRobot();
-//                telemetry.update();
-//                while (angle >115){
-//                    Pose3D pos = new Pose3D(odo.getPosition().getPosition(),odo.getVelocity().getOrientation());
-//                    String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-//                    telemetry.addData("Position", data);
-//                    angle = (angleWrap(odo.getHeading()));
-//                    odo.bulkUpdate();;
-//                    turnLeft(0.2);
-//                    telemetry.update();
-//                }
-//                stopRobot();
-//                odo.resetPosAndIMU();
-//                sleep(3000);
-//                while (true) {
-//                    Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-//                    String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-//                    telemetry.addData("Position", data);
-//                    angle = (angleWrap(odo.getHeading()));
-//                    odo.bulkUpdate();
-//                    driveBackwardCorrection(angle, -0.6, -60, pos.getPosition().x);
-//                    if (pos.getPosition().x <= -20) {
-//                        break;
-//                    }
-//                    telemetry.update();
-//                }
-            }
-            //DRIVE_DISTANCE_FORWARD(28,1.2);
-            //DRIVE_DISTANCE_LEFT(20.4f);
-            //DRIVE_DISTANCE_FORWARD(-24,1.2);
-            //TURN(1,20);
+                    turnLeft(0.6);
+                    if (angle > 173) {
+                        break;
+                    }
 
-            //move arm to place pixel
+                } else if (angle < 0) {
+                    if (angle < -173) {
+                        break;
+                    }
+                    turnRight(0.6);
+                    if (angle < -173) {
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            }
+            stopRobot();
+            telemetry.update();
+            while (true) { // strafe to the first block
+                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+                telemetry.addData("Position", data);
+                angle = (angleWrap(odo.getHeading()));
+                odo.bulkUpdate();
+                strafeRight(0.4);
+                if (pos.getPosition().y <= -980) {
+                    break;
+                }
+                telemetry.update();
+            }
+            stopRobot();
+            telemetry.update();
+//            LINEAR_SLIDE_DRIVE(9f, 1.0);
+//
+//            stopRobot();
+//            telemetry.update();
+            sleep(999999999);
         }
 
-
-
     }
+}
