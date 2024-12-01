@@ -342,7 +342,7 @@ public class sampleSideAutonomous extends LinearOpMode {
             clawServo.setPosition(Servo.MIN_POSITION);
             clawWristServo.setPosition(Servo.MAX_POSITION);
             odo.bulkUpdate();
-            sleep(333);
+            sleep(1000);
             LINEAR_SLIDE_DRIVE(8f, 0.9);
 ////            driveDistanceForward(0.6, -500, pos.getPosition().x);
 //            driveForward(0.2, angleWrap(odo.getHeading()));
@@ -385,8 +385,8 @@ public class sampleSideAutonomous extends LinearOpMode {
                 telemetry.addData("Position", data);
                 angle = (angleWrap(odo.getHeading()));
                 odo.bulkUpdate();
-                strafeRight(-0.5);
-                if (pos.getPosition().y <= -960) {
+                strafeRight(-0.6);
+                if (pos.getPosition().y <= -870) {
                     break;
                 }
                 telemetry.update();
@@ -430,7 +430,7 @@ public class sampleSideAutonomous extends LinearOpMode {
                 angle = (angleWrap(odo.getHeading()));
                 odo.bulkUpdate();
                 driveForwardCorrection(angle, 0.3, 500, pos.getPosition().x);
-                if (pos.getPosition().x >= 630) {
+                if (pos.getPosition().x >= 740) {
                     break;
                 }
                 telemetry.update();
@@ -447,7 +447,7 @@ public class sampleSideAutonomous extends LinearOpMode {
                 angle = (angleWrap(odo.getHeading()));
                 odo.bulkUpdate();
                 driveBackwardCorrection(angle, -0.5, 590, pos.getPosition().x);
-                if (pos.getPosition().x <= 559) {
+                if (pos.getPosition().x <= 580) {
                     break;
                 }
                 telemetry.update();
@@ -538,15 +538,16 @@ public class sampleSideAutonomous extends LinearOpMode {
                 angle = (angleWrap(odo.getHeading()));
                 odo.bulkUpdate();
                 driveForwardCorrection(angle, 0.5, 500, pos.getPosition().x);
-                if (pos.getPosition().x <= -115) {
+                if (pos.getPosition().x <= 30) {
                     break;
                 }
                 telemetry.update();
             }
             stopRobot();
             telemetry.update();
+            sleep(1000);
             clawServo.setPosition(Servo.MAX_POSITION);
-            sleep(500);
+            sleep(1000);
             while (true) { // back up from basket
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
@@ -554,7 +555,7 @@ public class sampleSideAutonomous extends LinearOpMode {
                 angle = (angleWrap(odo.getHeading()));
                 odo.bulkUpdate();
                 driveBackwardCorrection(angle, -0.5, 590, pos.getPosition().x);
-                if (pos.getPosition().x >= 0) {
+                if (pos.getPosition().x >= 20) {
                     break;
                 }
                 telemetry.update();
@@ -579,14 +580,15 @@ public class sampleSideAutonomous extends LinearOpMode {
             }
             stopRobot();
             telemetry.update();
-            while (true) { // back up from basket
+            clawServo.setPosition(Servo.MAX_POSITION);
+            while (true) { // back up from basket // either move forward after or decrease go backwards.
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
                 telemetry.addData("Position", data);
                 angle = (angleWrap(odo.getHeading()));
                 odo.bulkUpdate();
                 driveBackwardCorrection(angle, -0.6, 590, pos.getPosition().x);
-                if (pos.getPosition().x >= 600) {
+                if (pos.getPosition().x >= 750) {
                     break;
                 }
                 telemetry.update();
@@ -594,15 +596,14 @@ public class sampleSideAutonomous extends LinearOpMode {
             stopRobot();
             telemetry.update();
             clawWristServo.setPosition(Servo.MIN_POSITION);
-            clawServo.setPosition(Servo.MAX_POSITION);
-            while (true) { // strafe to first block
+            while (true) { // strafe over the second block
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
                 telemetry.addData("Position", data);
                 angle = (angleWrap(odo.getHeading()));
                 odo.bulkUpdate();
                 strafeRight(0.4);
-                if (pos.getPosition().y <= -1080) {
+                if (pos.getPosition().y <= -1090) {
                     break;
                 }
                 telemetry.update();
@@ -612,14 +613,14 @@ public class sampleSideAutonomous extends LinearOpMode {
             clawServo.setPosition(Servo.MIN_POSITION);
             sleep(500);
             clawWristServo.setPosition(Servo.MAX_POSITION);
-            while (true) { // go towards the basket
+            while (true) { // go towards the basket // need to make shorter
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
                 telemetry.addData("Position", data);
                 angle = (angleWrap(odo.getHeading()));
                 odo.bulkUpdate();
                 driveForwardCorrection(angle, 0.6, 590, pos.getPosition().x);
-                if (pos.getPosition().x <= -140) {
+                if (pos.getPosition().x <= -20) {
                     break;
                 }
                 telemetry.update();
