@@ -393,31 +393,45 @@ public class sampleSideAutonomous extends LinearOpMode {
             }
             stopRobot();
             telemetry.update();
-            while (true) { // angle correction
+            while (true) {
+                // angle correction function
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+                // create a new object for the while loop because the odometry doesn't update outside of the while loop
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+                // the odometry data to put on the driver hub
                 telemetry.addData("Position", data);
+                // creation of the new object inside the while loop
                 angle = (angleWrap(odo.getHeading()));
+                // if the angle is greater than 180, it goes to negatives - like 350 is coverted to -10
                 odo.bulkUpdate();
                 if(angle > 0) {
+                    // note - to the left is positive
                     if (angle < 2) {
                         break;
                     }
+                    // the reason I have two is because the program needs to stop exactly
                     turnRight(0.2);
+                    //if it's left - turn right to correct
                     if (angle < 2) {
                         break;
                     }
-                } else if (angle < 0 ) {
+                } else if (angle <= 0 ) {
+                    // to the right is negative
                     if (angle > -2){
                         break;
                     }
                     turnLeft(0.2);
+                    //make the robot correct itself
                     if(angle > -2){
                         break;
                     }
                 } else {
                     break;
                 }
+                /* the reason everything is 2 off from 0 is because I need to account
+                        for the momentum of the robot
+
+                 */
                 telemetry.update();
             }
             stopRobot();
@@ -440,19 +454,30 @@ public class sampleSideAutonomous extends LinearOpMode {
             clawServo.setPosition(Servo.MIN_POSITION);
             sleep(500);
             clawWristServo.setPosition(Servo.MAX_POSITION);
-            while (true) { // back up from getting block
+            while (true) {
+                // back up from getting block
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+                // create a new object for the while loop because the odometry doesn't update outside of the while loop
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+                // the odometry data to put on the driver hub
                 telemetry.addData("Position", data);
+                // telemetry for the driver hub
                 angle = (angleWrap(odo.getHeading()));
+                // since the odometry doesn't wrap, we need this function
+                // this basically converts angle like 370 to 10 - and 600 to -120
                 odo.bulkUpdate();
+                // updates the odo inside the while loop
+                // the only problem is tha the object doesn't update as well
                 driveBackwardCorrection(angle, -0.5, 590, pos.getPosition().x);
+                // drives backward
                 if (pos.getPosition().x <= 580) {
                     break;
                 }
+                // stops the while loop if the robot reaches the desired spot
                 telemetry.update();
             }
             stopRobot();
+            // need to stop the robot outside the while loop
             telemetry.update();
             while (true) { // turn the 180 degrees
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
