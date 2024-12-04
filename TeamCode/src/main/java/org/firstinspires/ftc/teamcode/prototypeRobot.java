@@ -32,6 +32,52 @@ public class prototypeRobot extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
 
+    public void LINEAR_SLIDE_DRIVE(float distance_in_in, double power) {
+        float ticksPerInch = 450.149432158f;
+        float f_ticks = ticksPerInch * distance_in_in;
+        int ticks = Math.round(f_ticks);
+        //753.1 ticks per revolution
+        //1.673 in per revolution (circumference)
+        //450.149432158 ticks per in
+        if (power > 0) {
+            //go up
+            linSlideL.setDirection(DcMotorSimple.Direction.FORWARD);
+            linSlideR.setDirection(DcMotorSimple.Direction.REVERSE);
+        } else {
+            //go down
+            linSlideL.setDirection(DcMotorSimple.Direction.REVERSE);
+            linSlideR.setDirection(DcMotorSimple.Direction.FORWARD);
+        }
+
+        linSlideL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linSlideL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linSlideL.setPower(power);
+        linSlideL.setTargetPosition(ticks);
+        linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linSlideR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linSlideR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linSlideR.setPower(power);
+        linSlideR.setTargetPosition(ticks);
+        linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        telemetry.addData("slide", "> is running to position");
+        telemetry.update();
+        while ((linSlideR.getCurrentPosition() <= linSlideR.getTargetPosition() - 50) && linSlideL.getCurrentPosition() <= (linSlideL.getTargetPosition() - 50)) {
+            //Wait until job is finished
+            telemetry.addData("slide", "> is strafing to position");
+            telemetry.addData("ticks", ">" +
+                    linSlideR.getCurrentPosition() + " need to get to " +
+                    linSlideR.getTargetPosition());
+            telemetry.addData("slide", "> is strafing to position");
+            telemetry.addData("ticks", ">" + linSlideL.getCurrentPosition() + " need to get to " + linSlideL.getTargetPosition());
+            telemetry.update();
+        }
+    }
+
+    public void moveArmToPositionOfBlock(){
+        LINEAR_SLIDE_DRIVE(3, 1);
+    }
+
     public void intakeArmControl(){
         if(intakeArmServoCount % 4 == 0){
             intakeArmServo.setPosition(0.5);
@@ -222,6 +268,14 @@ public class prototypeRobot extends LinearOpMode {
                 clawWristServoCount++;
                 clawWristServoControl();
             }
+            if(gamepad1.x){
+                moveArmToPositionOfBlock(); //we need to know the actual position though
+            }
+
         }
+        linSlideL.setDirection(DcMotorSimple.Direction.REVERSE);
+        linSlideR.setDirection(DcMotorSimple.Direction.FORWARD);
+        linSlideL.setPower(0.9);
+        linSlideR.setPower(0.9);
     }
 }
