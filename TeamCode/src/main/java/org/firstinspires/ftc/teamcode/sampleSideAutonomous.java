@@ -339,11 +339,12 @@ public class sampleSideAutonomous extends LinearOpMode {
         odo.resetPosAndIMU();
         double angle = angleWrap(odo.getHeading());
         if (opModeIsActive()) {
+            sleep(1000);
             clawServo.setPosition(Servo.MIN_POSITION);
             clawWristServo.setPosition(Servo.MAX_POSITION);
             odo.bulkUpdate();
             sleep(1000);
-            LINEAR_SLIDE_DRIVE(8f, 0.9);
+            LINEAR_SLIDE_DRIVE(8f, 1);
 ////            driveDistanceForward(0.6, -500, pos.getPosition().x);
 //            driveForward(0.2, angleWrap(odo.getHeading()));
             while (true) { // go forward for the initial hang
@@ -378,6 +379,49 @@ public class sampleSideAutonomous extends LinearOpMode {
             stopRobot();
             clawServo.setPosition(Servo.MIN_POSITION);
             LINEAR_SLIDE_DRIVE(5f, -1);
+            while (true) {
+                // angle correction function
+                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+                // create a new object for the while loop because the odometry doesn't update outside of the while loop
+                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+                // the odometry data to put on the driver hub
+                telemetry.addData("Position", data);
+                // creation of the new object inside the while loop
+                angle = (angleWrap(odo.getHeading()));
+                // if the angle is greater than 180, it goes to negatives - like 350 is coverted to -10
+                odo.bulkUpdate();
+                if(angle > 0) {
+                    // note - to the left is positive
+                    if (angle < 2) {
+                        break;
+                    }
+                    // the reason I have two is because the program needs to stop exactly
+                    turnRight(0.2);
+                    //if it's left - turn right to correct
+                    if (angle < 2) {
+                        break;
+                    }
+                } else if (angle <= 0 ) {
+                    // to the right is negative
+                    if (angle > -2){
+                        break;
+                    }
+                    turnLeft(0.2);
+                    //make the robot correct itself
+                    if(angle > -2){
+                        break;
+                    }
+                } else {
+                    break;
+                }
+                /* the reason everything is 2 off from 0 is because I need to account
+                        for the momentum of the robot
+
+                 */
+                telemetry.update();
+            }
+            stopRobot();
+            telemetry.update();
             telemetry.update();
             while (true) { // strafe to the first block
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
@@ -444,7 +488,7 @@ public class sampleSideAutonomous extends LinearOpMode {
                 angle = (angleWrap(odo.getHeading()));
                 odo.bulkUpdate();
                 driveForwardCorrection(angle, 0.3, 500, pos.getPosition().x);
-                if (pos.getPosition().x >= 740) {
+                if (pos.getPosition().x >= 760) {
                     break;
                 }
                 telemetry.update();
@@ -509,6 +553,7 @@ public class sampleSideAutonomous extends LinearOpMode {
             }
             stopRobot();
             telemetry.update();
+            LINEAR_SLIDE_DRIVE(9f, 1.0);
             while (true) { // strafe to basket
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
@@ -516,7 +561,7 @@ public class sampleSideAutonomous extends LinearOpMode {
                 angle = (angleWrap(odo.getHeading()));
                 odo.bulkUpdate();
                 strafeRight(0.5);
-                if (pos.getPosition().y <= -1210) {
+                if (pos.getPosition().y <= -1190) {
                     break;
                 }
                 telemetry.update();
@@ -552,7 +597,6 @@ public class sampleSideAutonomous extends LinearOpMode {
             }
             stopRobot();
             telemetry.update();
-            LINEAR_SLIDE_DRIVE(9f, 1.0);
 
             stopRobot();
             telemetry.update();
@@ -563,7 +607,7 @@ public class sampleSideAutonomous extends LinearOpMode {
                 angle = (angleWrap(odo.getHeading()));
                 odo.bulkUpdate();
                 driveForwardCorrection(angle, 0.5, 500, pos.getPosition().x);
-                if (pos.getPosition().x <= 30) {
+                if (pos.getPosition().x <= 0) {
                     break;
                 }
                 telemetry.update();
@@ -613,7 +657,7 @@ public class sampleSideAutonomous extends LinearOpMode {
                 angle = (angleWrap(odo.getHeading()));
                 odo.bulkUpdate();
                 driveBackwardCorrection(angle, -0.6, 590, pos.getPosition().x);
-                if (pos.getPosition().x >= 750) {
+                if (pos.getPosition().x >= 690) {
                     break;
                 }
                 telemetry.update();
@@ -628,7 +672,7 @@ public class sampleSideAutonomous extends LinearOpMode {
                 angle = (angleWrap(odo.getHeading()));
                 odo.bulkUpdate();
                 strafeRight(0.4);
-                if (pos.getPosition().y <= -1090) {
+                if (pos.getPosition().y <= -1010) {
                     break;
                 }
                 telemetry.update();
@@ -645,7 +689,7 @@ public class sampleSideAutonomous extends LinearOpMode {
                 angle = (angleWrap(odo.getHeading()));
                 odo.bulkUpdate();
                 driveForwardCorrection(angle, 0.6, 590, pos.getPosition().x);
-                if (pos.getPosition().x <= -20) {
+                if (pos.getPosition().x <= 200) {
                     break;
                 }
                 telemetry.update();
@@ -660,7 +704,7 @@ public class sampleSideAutonomous extends LinearOpMode {
                 angle = (angleWrap(odo.getHeading()));
                 odo.bulkUpdate();
                 strafeRight(0.4);
-                if (pos.getPosition().y <= -1220) {
+                if (pos.getPosition().y <= -1280) {
                     break;
                 }
                 telemetry.update();

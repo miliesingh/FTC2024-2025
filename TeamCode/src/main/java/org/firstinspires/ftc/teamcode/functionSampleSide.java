@@ -590,10 +590,10 @@ public class functionSampleSide extends LinearOpMode {
             clawServo.setPosition(Servo.MIN_POSITION);
             LINEAR_SLIDE_DRIVE(5f, -1);
             telemetry.update();
-            strafeLeftYDecrease(0.6, -870); // strafe to the left over to the first block
+            strafeLeftYDecrease(0.6, -890); // strafe to the left over to the first block
             angleCorrectionFacingZeroBothSides(0.2); // correcting angles
             clawServo.setPosition(Servo.MAX_POSITION);
-            driveForwardXIncrease(0.3, 740); // drive forward to pick up the first block
+            driveForwardXIncrease(0.3, 750); // drive forward to pick up the first block
             clawServo.setPosition(Servo.MIN_POSITION);
             sleep(500);
             clawWristServo.setPosition(Servo.MAX_POSITION);
@@ -604,7 +604,7 @@ public class functionSampleSide extends LinearOpMode {
            LINEAR_SLIDE_DRIVE(9f, 1.0);
            stopRobot();
            telemetry.update();
-           driveForwardXDecrease(0.5, 30); // driving forward to put the picked up sample in the basket
+           driveForwardXDecrease(0.5, 35); // driving forward to put the picked up sample in the basket
            sleep(1000);
            clawServo.setPosition(Servo.MAX_POSITION);
            sleep(1000);
@@ -615,13 +615,13 @@ public class functionSampleSide extends LinearOpMode {
            stopRobot();
            strafeLeftYIncrease(0.5, -880); // going around the second sample
            clawServo.setPosition(Servo.MAX_POSITION);
-           driveBackwardXIncrease(0.6, 750); // driving back to the second sample
+           driveBackwardXIncrease(0.6, 730); // driving back to the second sample
            clawWristServo.setPosition(Servo.MIN_POSITION); // opening claw to get the second sample
            strafeRightYDecrease(0.4, -1090); // strafing over the second sample
            clawServo.setPosition(Servo.MIN_POSITION); // grabbing the second sample
            sleep(500);
            clawWristServo.setPosition(Servo.MAX_POSITION);
-           driveForwardXDecrease(0.6, -20); // going forward to be in line with the basket
+           driveForwardXDecrease(0.6, 0); // going forward to be in line with the basket
            LINEAR_SLIDE_DRIVE(9f, 1.0);
            strafeRightYDecrease(0.4, -1220); // strafing over the basket
             clawServo.setPosition(Servo.MAX_POSITION); // opening the claw and dropping the sample in the basket
