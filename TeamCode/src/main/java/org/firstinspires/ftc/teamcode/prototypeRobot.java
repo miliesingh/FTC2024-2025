@@ -271,11 +271,14 @@ public class prototypeRobot extends LinearOpMode {
             if(gamepad1.x){
                 moveArmToPositionOfBlock(); //we need to know the actual position though
             }
+            if(gamepad1.left_bumper){
+                linSlideL.setDirection(DcMotorSimple.Direction.REVERSE);
+                linSlideR.setDirection(DcMotorSimple.Direction.FORWARD);
+                linSlideL.setPower(0.9);
+                linSlideR.setPower(0.9);
+                sleep(999999999);
+            }
 
         }
-        linSlideL.setDirection(DcMotorSimple.Direction.REVERSE);
-        linSlideR.setDirection(DcMotorSimple.Direction.FORWARD);
-        linSlideL.setPower(0.9);
-        linSlideR.setPower(0.9);
     }
 }
