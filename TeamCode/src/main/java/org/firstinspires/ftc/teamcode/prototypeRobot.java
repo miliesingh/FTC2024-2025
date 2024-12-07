@@ -72,11 +72,20 @@ public class prototypeRobot extends LinearOpMode {
             telemetry.addData("ticks", ">" + linSlideL.getCurrentPosition() + " need to get to " + linSlideL.getTargetPosition());
             telemetry.update();
         }
+
     }
 
-    public void moveArmToPositionOfBlock(){
-        LINEAR_SLIDE_DRIVE(3, 1);
+    public void moveSlideToPosition(){
+        linSlideL.setDirection(DcMotorSimple.Direction.FORWARD);
+        linSlideR.setDirection(DcMotorSimple.Direction.REVERSE);
+        linSlideL.setPower(0.6);
+        linSlideR.setPower(0.6);
+        sleep(333);
+        linSlideL.setPower(0.05);
+        linSlideR.setPower(0.05);
     }
+
+
 
     public void intakeArmControl(){
         if(intakeArmServoCount % 4 == 0){
@@ -269,7 +278,7 @@ public class prototypeRobot extends LinearOpMode {
                 clawWristServoControl();
             }
             if(gamepad1.x){
-                moveArmToPositionOfBlock(); //we need to know the actual position though
+                moveSlideToPosition();
             }
             if(gamepad1.left_bumper){
                 linSlideL.setDirection(DcMotorSimple.Direction.REVERSE);

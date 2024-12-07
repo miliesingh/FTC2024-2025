@@ -439,11 +439,11 @@ public class firstAutonomousProgram extends LinearOpMode {
                 telemetry.addData("Position", data);
                 angle = (angleWrap(odo.getHeading()));
                 odo.bulkUpdate();
-                if (pos.getPosition().y >= 950) {
+                if (pos.getPosition().y >= 920) {
                     break;
                 }
                 strafeRight(0.6);
-                if (pos.getPosition().y >= 950) {
+                if (pos.getPosition().y >= 920) {
                     break;
                 }
                 telemetry.update();
@@ -505,7 +505,7 @@ public class firstAutonomousProgram extends LinearOpMode {
             sleep(500);
             telemetry.update();
             clawServo.setPosition(1); // open
-            sleep(1000);
+            sleep(3000);
 
             while (true) { // getting the block
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
@@ -613,7 +613,7 @@ public class firstAutonomousProgram extends LinearOpMode {
                 telemetry.addData("Position", data);
                 angle = (angleWrap(odo.getHeading()));
                 odo.bulkUpdate();
-                driveForwardCorrection(angle, 0.4, 500, pos.getPosition().x);
+                driveForwardCorrection(angle, 0.3, 500, pos.getPosition().x);
                 if (pos.getPosition().x >= 440) {
                     break;
                 }
