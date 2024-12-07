@@ -274,8 +274,8 @@ public class prototypeRobot extends LinearOpMode {
             if(gamepad1.left_bumper){
                 linSlideL.setDirection(DcMotorSimple.Direction.REVERSE);
                 linSlideR.setDirection(DcMotorSimple.Direction.FORWARD);
-                linSlideL.setPower(0.9);
-                linSlideR.setPower(0.9);
+                linSlideL.setPower(1);
+                linSlideR.setPower(1);
                 sleep(999999999);
             }
 

@@ -15,8 +15,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import java.util.Locale;
 
 // This is far side Blue
-@Autonomous(name="basketSide", group="Auto2024")
-public class sampleSideAutonomous extends LinearOpMode {
+@Autonomous(name="basketDistance", group="Auto2024")
+public class sampleAutonomousWithDistanc extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor rightFront = null;
     private DcMotor leftFront = null;
@@ -289,19 +289,22 @@ public class sampleSideAutonomous extends LinearOpMode {
         }
     }
 
-    public void strafeLeftUntilBlock(){
-        while(true){
+    public void strafeLeftUntilBlock() {
+        while (true) {
             strafeRight(-0.2);
-            if (positioningDistance.getDistance(DistanceUnit.CM)<50)
+            telemetry.addData("range", String.format("%.01f cm", positioningDistance.getDistance(DistanceUnit.CM)));
+            if (positioningDistance.getDistance(DistanceUnit.CM) < 35)
                 break;
         }
         stopRobot();
         telemetry.update();
     }
-    public void goForwardUntilBlock(){
-        while (true){
-            driveForward(0.3);
-            if(positioningDistance.getDistance(DistanceUnit.CM) < 15){
+
+    public void goForwardUntilBlock() {
+        while (true) {
+            driveForwardCorrection(0,0.3, 1, 1);
+            telemetry.addData("range", String.format("%.01f cm", positioningDistance.getDistance(DistanceUnit.CM)));
+            if (positioningDistance.getDistance(DistanceUnit.CM) < 10) {
                 break;
             }
         }
@@ -412,7 +415,7 @@ public class sampleSideAutonomous extends LinearOpMode {
                 angle = (angleWrap(odo.getHeading()));
                 // if the angle is greater than 180, it goes to negatives - like 350 is coverted to -10
                 odo.bulkUpdate();
-                if(angle > 0) {
+                if (angle > 0) {
                     // note - to the left is positive
                     if (angle < 2) {
                         break;
@@ -423,14 +426,14 @@ public class sampleSideAutonomous extends LinearOpMode {
                     if (angle < 2) {
                         break;
                     }
-                } else if (angle <= 0 ) {
+                } else if (angle <= 0) {
                     // to the right is negative
-                    if (angle > -2){
+                    if (angle > -2) {
                         break;
                     }
                     turnLeft(0.2);
                     //make the robot correct itself
-                    if(angle > -2){
+                    if (angle > -2) {
                         break;
                     }
                 } else {
@@ -445,6 +448,7 @@ public class sampleSideAutonomous extends LinearOpMode {
             stopRobot();
             telemetry.update();
             telemetry.update();
+            clawServo.setPosition(Servo.MAX_POSITION);
             while (true) { // strafe to the first block
                 Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
                 String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
@@ -452,11 +456,13 @@ public class sampleSideAutonomous extends LinearOpMode {
                 angle = (angleWrap(odo.getHeading()));
                 odo.bulkUpdate();
                 strafeRight(-0.6);
-                if (pos.getPosition().y <= -870) {
+                if (pos.getPosition().y <= -700) {
                     break;
                 }
                 telemetry.update();
             }
+            stopRobot();
+            strafeLeftUntilBlock();
             stopRobot();
             telemetry.update();
             while (true) {
@@ -470,7 +476,7 @@ public class sampleSideAutonomous extends LinearOpMode {
                 angle = (angleWrap(odo.getHeading()));
                 // if the angle is greater than 180, it goes to negatives - like 350 is coverted to -10
                 odo.bulkUpdate();
-                if(angle > 0) {
+                if (angle > 0) {
                     // note - to the left is positive
                     if (angle < 2) {
                         break;
@@ -481,14 +487,14 @@ public class sampleSideAutonomous extends LinearOpMode {
                     if (angle < 2) {
                         break;
                     }
-                } else if (angle <= 0 ) {
+                } else if (angle <= 0) {
                     // to the right is negative
-                    if (angle > -2){
+                    if (angle > -2) {
                         break;
                     }
                     turnLeft(0.2);
                     //make the robot correct itself
-                    if(angle > -2){
+                    if (angle > -2) {
                         break;
                     }
                 } else {
@@ -502,241 +508,230 @@ public class sampleSideAutonomous extends LinearOpMode {
             }
             stopRobot();
             telemetry.update();
-            clawServo.setPosition(Servo.MAX_POSITION);
-            while (true) { // getting block
-                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-                telemetry.addData("Position", data);
-                angle = (angleWrap(odo.getHeading()));
-                odo.bulkUpdate();
-                driveForwardCorrection(angle, 0.3, 500, pos.getPosition().x);
-                if (pos.getPosition().x >= 760) {
-                    break;
-                }
-                telemetry.update();
-            }
+            goForwardUntilBlock();
             stopRobot();
             telemetry.update();
             clawServo.setPosition(Servo.MIN_POSITION);
             sleep(500);
             clawWristServo.setPosition(Servo.MAX_POSITION);
-            while (true) {
-                // back up from getting block
-                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-                // create a new object for the while loop because the odometry doesn't update outside of the while loop
-                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-                // the odometry data to put on the driver hub
-                telemetry.addData("Position", data);
-                // telemetry for the driver hub
-                angle = (angleWrap(odo.getHeading()));
-                // since the odometry doesn't wrap, we need this function
-                // this basically converts angle like 370 to 10 - and 600 to -120
-                odo.bulkUpdate();
-                // updates the odo inside the while loop
-                // the only problem is tha the object doesn't update as well
-                driveBackwardCorrection(angle, -0.5, 590, pos.getPosition().x);
-                // drives backward
-                if (pos.getPosition().x <= 580) {
-                    break;
-                }
-                // stops the while loop if the robot reaches the desired spot
-                telemetry.update();
-            }
-            stopRobot();
-            // need to stop the robot outside the while loop
-            telemetry.update();
-            while (true) { // turn the 180 degrees
-                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-                telemetry.addData("Position", data);
-                angle = (angleWrap(odo.getHeading()));
-                odo.bulkUpdate();
-                if (angle > 0){
-
-                    if (angle > 173) {
-                        break;
-                    }
-                    turnLeft(0.4);
-                    if (angle > 173) {
-                        break;
-                    }
-
-                } else if (angle < 0) {
-                    if (angle < -173) {
-                        break;
-                    }
-                    turnRight(0.4);
-                    if (angle < -173) {
-                        break;
-                    }
-                } else {
-                    break;
-                }
-            }
-            stopRobot();
-            telemetry.update();
-            LINEAR_SLIDE_DRIVE(9f, 1.0);
-            while (true) { // strafe to basket
-                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-                telemetry.addData("Position", data);
-                angle = (angleWrap(odo.getHeading()));
-                odo.bulkUpdate();
-                strafeRight(0.5);
-                if (pos.getPosition().y <= -1190) {
-                    break;
-                }
-                telemetry.update();
-            }
-            stopRobot();
-            telemetry.update();
-            while (true) { // angle correction
-                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-                telemetry.addData("Position", data);
-                angle = (angleWrap(odo.getHeading()));
-                odo.bulkUpdate();
-                if(angle > 0) {
-                    if (angle > 178) {
-                        break;
-                    }
-                    turnLeft(0.2);
-                    if (angle > 178) {
-                        break;
-                    }
-                } else if (angle < 0 ) {
-                    if (angle < -178){
-                        break;
-                    }
-                    turnRight(0.2);
-                    if(angle < -178){
-                        break;
-                    }
-                } else {
-                    break;
-                }
-                telemetry.update();
-            }
-            stopRobot();
-            telemetry.update();
-
-            stopRobot();
-            telemetry.update();
-            while (true) { // forward to basket
-                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-                telemetry.addData("Position", data);
-                angle = (angleWrap(odo.getHeading()));
-                odo.bulkUpdate();
-                driveForwardCorrection(angle, 0.5, 500, pos.getPosition().x);
-                if (pos.getPosition().x <= 0) {
-                    break;
-                }
-                telemetry.update();
-            }
-            stopRobot();
-            telemetry.update();
-            sleep(1000);
-            clawServo.setPosition(Servo.MAX_POSITION);
-            sleep(1000);
-            while (true) { // back up from basket
-                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-                telemetry.addData("Position", data);
-                angle = (angleWrap(odo.getHeading()));
-                odo.bulkUpdate();
-                driveBackwardCorrection(angle, -0.5, 590, pos.getPosition().x);
-                if (pos.getPosition().x >= 20) {
-                    break;
-                }
-                telemetry.update();
-            }
-            stopRobot();
-            telemetry.update();
-            clawWristServo.setPosition(Servo.MIN_POSITION);
-            clawServo.setPosition(Servo.MIN_POSITION);
-            LINEAR_SLIDE_DRIVE(9f, -1);
-            stopRobot();
-            while (true) { // strafe around first block
-                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-                telemetry.addData("Position", data);
-                angle = (angleWrap(odo.getHeading()));
-                odo.bulkUpdate();
-                strafeRight(-0.5);
-                if (pos.getPosition().y >= -880) {
-                    break;
-                }
-                telemetry.update();
-            }
-            stopRobot();
-            telemetry.update();
-            clawServo.setPosition(Servo.MAX_POSITION);
-            while (true) { // back up from basket // either move forward after or decrease go backwards.
-                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-                telemetry.addData("Position", data);
-                angle = (angleWrap(odo.getHeading()));
-                odo.bulkUpdate();
-                driveBackwardCorrection(angle, -0.6, 590, pos.getPosition().x);
-                if (pos.getPosition().x >= 690) {
-                    break;
-                }
-                telemetry.update();
-            }
-            stopRobot();
-            telemetry.update();
-            clawWristServo.setPosition(Servo.MIN_POSITION);
-            while (true) { // strafe over the second block
-                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-                telemetry.addData("Position", data);
-                angle = (angleWrap(odo.getHeading()));
-                odo.bulkUpdate();
-                strafeRight(0.4);
-                if (pos.getPosition().y <= -1010) {
-                    break;
-                }
-                telemetry.update();
-            }
-            stopRobot();
-            telemetry.update();
-            clawServo.setPosition(Servo.MIN_POSITION);
-            sleep(500);
-            clawWristServo.setPosition(Servo.MAX_POSITION);
-            while (true) { // go towards the basket // need to make shorter
-                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-                telemetry.addData("Position", data);
-                angle = (angleWrap(odo.getHeading()));
-                odo.bulkUpdate();
-                driveForwardCorrection(angle, 0.6, 590, pos.getPosition().x);
-                if (pos.getPosition().x <= 200) {
-                    break;
-                }
-                telemetry.update();
-            }
-            telemetry.update();
-            stopRobot();
-            LINEAR_SLIDE_DRIVE(9f, 1.0);
-            while (true) { // strafe to basket
-                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-                telemetry.addData("Position", data);
-                angle = (angleWrap(odo.getHeading()));
-                odo.bulkUpdate();
-                strafeRight(0.4);
-                if (pos.getPosition().y <= -1280) {
-                    break;
-                }
-                telemetry.update();
-            }
-            stopRobot();
-            telemetry.update();
-            clawServo.setPosition(Servo.MAX_POSITION);
-            sleep(99999999);
+//            while (true) {
+//                // back up from getting block
+//                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+//                // create a new object for the while loop because the odometry doesn't update outside of the while loop
+//                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+//                // the odometry data to put on the driver hub
+//                telemetry.addData("Position", data);
+//                // telemetry for the driver hub
+//                angle = (angleWrap(odo.getHeading()));
+//                // since the odometry doesn't wrap, we need this function
+//                // this basically converts angle like 370 to 10 - and 600 to -120
+//                odo.bulkUpdate();
+//                // updates the odo inside the while loop
+//                // the only problem is tha the object doesn't update as well
+//                driveBackwardCorrection(angle, -0.5, 590, pos.getPosition().x);
+//                // drives backward
+//                if (pos.getPosition().x <= 580) {
+//                    break;
+//                }
+//                // stops the while loop if the robot reaches the desired spot
+//                telemetry.update();
+//            }
+//            stopRobot();
+//            // need to stop the robot outside the while loop
+//            telemetry.update();
+//            while (true) { // turn the 180 degrees
+//                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+//                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+//                telemetry.addData("Position", data);
+//                angle = (angleWrap(odo.getHeading()));
+//                odo.bulkUpdate();
+//                if (angle > 0){
+//
+//                    if (angle > 173) {
+//                        break;
+//                    }
+//                    turnLeft(0.4);
+//                    if (angle > 173) {
+//                        break;
+//                    }
+//
+//                } else if (angle < 0) {
+//                    if (angle < -173) {
+//                        break;
+//                    }
+//                    turnRight(0.4);
+//                    if (angle < -173) {
+//                        break;
+//                    }
+//                } else {
+//                    break;
+//                }
+//            }
+//            stopRobot();
+//            telemetry.update();
+//            LINEAR_SLIDE_DRIVE(9f, 1.0);
+//            while (true) { // strafe to basket
+//                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+//                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+//                telemetry.addData("Position", data);
+//                angle = (angleWrap(odo.getHeading()));
+//                odo.bulkUpdate();
+//                strafeRight(0.5);
+//                if (pos.getPosition().y <= -1190) {
+//                    break;
+//                }
+//                telemetry.update();
+//            }
+//            stopRobot();
+//            telemetry.update();
+//            while (true) { // angle correction
+//                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+//                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+//                telemetry.addData("Position", data);
+//                angle = (angleWrap(odo.getHeading()));
+//                odo.bulkUpdate();
+//                if(angle > 0) {
+//                    if (angle > 178) {
+//                        break;
+//                    }
+//                    turnLeft(0.2);
+//                    if (angle > 178) {
+//                        break;
+//                    }
+//                } else if (angle < 0 ) {
+//                    if (angle < -178){
+//                        break;
+//                    }
+//                    turnRight(0.2);
+//                    if(angle < -178){
+//                        break;
+//                    }
+//                } else {
+//                    break;
+//                }
+//                telemetry.update();
+//            }
+//            stopRobot();
+//            telemetry.update();
+//
+//            stopRobot();
+//            telemetry.update();
+//            while (true) { // forward to basket
+//                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+//                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+//                telemetry.addData("Position", data);
+//                angle = (angleWrap(odo.getHeading()));
+//                odo.bulkUpdate();
+//                driveForwardCorrection(angle, 0.5, 500, pos.getPosition().x);
+//                if (pos.getPosition().x <= 0) {
+//                    break;
+//                }
+//                telemetry.update();
+//            }
+//            stopRobot();
+//            telemetry.update();
+//            sleep(1000);
+//            clawServo.setPosition(Servo.MAX_POSITION);
+//            sleep(1000);
+//            while (true) { // back up from basket
+//                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+//                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+//                telemetry.addData("Position", data);
+//                angle = (angleWrap(odo.getHeading()));
+//                odo.bulkUpdate();
+//                driveBackwardCorrection(angle, -0.5, 590, pos.getPosition().x);
+//                if (pos.getPosition().x >= 20) {
+//                    break;
+//                }
+//                telemetry.update();
+//            }
+//            stopRobot();
+//            telemetry.update();
+//            clawWristServo.setPosition(Servo.MIN_POSITION);
+//            clawServo.setPosition(Servo.MIN_POSITION);
+//            LINEAR_SLIDE_DRIVE(9f, -1);
+//            stopRobot();
+//            while (true) { // strafe around first block
+//                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+//                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+//                telemetry.addData("Position", data);
+//                angle = (angleWrap(odo.getHeading()));
+//                odo.bulkUpdate();
+//                strafeRight(-0.5);
+//                if (pos.getPosition().y >= -880) {
+//                    break;
+//                }
+//                telemetry.update();
+//            }
+//            stopRobot();
+//            telemetry.update();
+//            clawServo.setPosition(Servo.MAX_POSITION);
+//            while (true) { // back up from basket // either move forward after or decrease go backwards.
+//                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+//                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+//                telemetry.addData("Position", data);
+//                angle = (angleWrap(odo.getHeading()));
+//                odo.bulkUpdate();
+//                driveBackwardCorrection(angle, -0.6, 590, pos.getPosition().x);
+//                if (pos.getPosition().x >= 690) {
+//                    break;
+//                }
+//                telemetry.update();
+//            }
+//            stopRobot();
+//            telemetry.update();
+//            clawWristServo.setPosition(Servo.MIN_POSITION);
+//            while (true) { // strafe over the second block
+//                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+//                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+//                telemetry.addData("Position", data);
+//                angle = (angleWrap(odo.getHeading()));
+//                odo.bulkUpdate();
+//                strafeRight(0.4);
+//                if (pos.getPosition().y <= -1010) {
+//                    break;
+//                }
+//                telemetry.update();
+//            }
+//            stopRobot();
+//            telemetry.update();
+//            clawServo.setPosition(Servo.MIN_POSITION);
+//            sleep(500);
+//            clawWristServo.setPosition(Servo.MAX_POSITION);
+//            while (true) { // go towards the basket // need to make shorter
+//                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+//                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+//                telemetry.addData("Position", data);
+//                angle = (angleWrap(odo.getHeading()));
+//                odo.bulkUpdate();
+//                driveForwardCorrection(angle, 0.6, 590, pos.getPosition().x);
+//                if (pos.getPosition().x <= 200) {
+//                    break;
+//                }
+//                telemetry.update();
+//            }
+//            telemetry.update();
+//            stopRobot();
+//            LINEAR_SLIDE_DRIVE(9f, 1.0);
+//            while (true) { // strafe to basket
+//                Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+//                String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+//                telemetry.addData("Position", data);
+//                angle = (angleWrap(odo.getHeading()));
+//                odo.bulkUpdate();
+//                strafeRight(0.4);
+//                if (pos.getPosition().y <= -1280) {
+//                    break;
+//                }
+//                telemetry.update();
+//            }
+//            stopRobot();
+//            telemetry.update();
+//            clawServo.setPosition(Servo.MAX_POSITION);
+//            sleep(99999999);
+//
+//        }
 
         }
-
     }
 }
