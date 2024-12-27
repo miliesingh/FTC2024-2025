@@ -9,20 +9,18 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name="prototypeRobot", group="Linear Opmode")
-public class prototypeRobot extends LinearOpMode {
+@TeleOp(name="newPrototypeRobot", group="Linear Opmode")
+public class newPrototypeRobot extends LinearOpMode {
     private DcMotor leftFront = null;
     private DcMotor leftBack = null;
     private DcMotor rightFront = null;
     private DcMotor rightBack = null;
     private DcMotor linSlideR = null;
     private DcMotor linSlideL = null;
-    private ServoImplEx intakeArmServo = null;
-
-    PwmControl.PwmRange armRange = new PwmControl.PwmRange(1000, 2000);
-
+    private Servo intakeArmServo = null;
     private Servo intakeServo = null;
-    private Servo intakeWristServo = null;
+    private ServoImplEx intakeWristServo = null;
+    PwmControl.PwmRange range = new PwmControl.PwmRange(900, 2100);
     private Servo clawServo = null;
     private Servo clawWristServo = null;
 
@@ -80,8 +78,8 @@ public class prototypeRobot extends LinearOpMode {
     public void moveSlideToPosition(){
         linSlideL.setDirection(DcMotorSimple.Direction.FORWARD);
         linSlideR.setDirection(DcMotorSimple.Direction.REVERSE);
-        linSlideL.setPower(0.7);
-        linSlideR.setPower(0.7);
+        linSlideL.setPower(0.6);
+        linSlideR.setPower(0.6);
         sleep(333);
         linSlideL.setPower(0.05);
         linSlideR.setPower(0.05);
@@ -123,10 +121,13 @@ public class prototypeRobot extends LinearOpMode {
         }
     }
     public void clawWristServoControl(){
-        if(clawWristServoCount % 2 == 0){
+        if(clawWristServoCount % 3 == 0){
             clawWristServo.setPosition(Servo.MIN_POSITION);
         }
-        if(clawWristServoCount % 2 == 1){
+        if(clawWristServoCount%3 == 1){
+            clawWristServo.setPosition((Servo.MAX_POSITION-Servo.MIN_POSITION)/2);
+        }
+        if(clawWristServoCount % 3 == 2){
             clawWristServo.setPosition(Servo.MAX_POSITION);
         }
     }
@@ -140,17 +141,15 @@ public class prototypeRobot extends LinearOpMode {
     }
     public void intakeWristServoControl(){
         if(intakeWristCount % 2 == 0){
-            intakeWristServo.setPosition(0.5);
-        }
-        if(intakeWristCount % 2 == 1){
             intakeWristServo.setPosition(Servo.MIN_POSITION);
         }
-
+        if(intakeWristCount % 2 == 1){
+            intakeWristServo.setPosition(Servo.MAX_POSITION);
+        }
     }
 
     public void runOpMode(){
         telemetry.addData("Status", "Initialized");
-        telemetry.addData("clawCount", clawCount);
         telemetry.update();
 
         leftFront = hardwareMap.get(DcMotor.class, "leftFront");
@@ -159,9 +158,9 @@ public class prototypeRobot extends LinearOpMode {
         rightBack = hardwareMap.get(DcMotor.class, "rightBack");
         linSlideL=  hardwareMap.get(DcMotor.class, "linSlideL");
         linSlideR = hardwareMap.get(DcMotor.class, "linSlideR");
-        intakeArmServo = hardwareMap.get(ServoImplEx.class, "intakeArmServo");
-        intakeArmServo.setPwmRange(armRange);
-        intakeWristServo = hardwareMap.get(Servo.class, "intakeWristServo");
+        intakeArmServo = hardwareMap.get(Servo.class, "intakeArmServo");
+        intakeWristServo = hardwareMap.get(ServoImplEx.class, "intakeWristServo");
+        intakeWristServo.setPwmRange(range);
         intakeServo = hardwareMap.get(Servo.class, "intakeServo");
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         clawWristServo = hardwareMap.get(Servo.class, "clawWristServo");
@@ -183,6 +182,7 @@ public class prototypeRobot extends LinearOpMode {
             // telemetry.addData(countPixel);
             //telemetry.update();
             telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("clawCount", clawCount);
             telemetry.update();
 
             double max;
@@ -193,10 +193,10 @@ public class prototypeRobot extends LinearOpMode {
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
-            double leftFrontPower  = -1*(axial + lateral + yaw);
-            double rightFrontPower = -1*(axial - lateral - yaw);
-            double leftBackPower   = -1*(axial - lateral + yaw);
-            double rightBackPower  = -1*(axial + lateral - yaw);
+            double leftFrontPower  = -1.25*(axial + lateral + yaw);
+            double rightFrontPower = -1.25*(axial - lateral - yaw);
+            double leftBackPower   = -1.25*(axial - lateral + yaw);
+            double rightBackPower  = -1.25*(axial + lateral - yaw);
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
@@ -213,33 +213,32 @@ public class prototypeRobot extends LinearOpMode {
 
 
             // Send calculated power to wheels
-            leftFront.setPower(leftFrontPower*1.1);
-            rightFront.setPower(rightFrontPower*1.1);
-            leftBack.setPower(leftBackPower*1.1); // had to fix both backs to drive
-            rightBack.setPower(rightBackPower*1.1);
+            leftFront.setPower(leftFrontPower);
+            rightFront.setPower(rightFrontPower);
+            leftBack.setPower(leftBackPower); // had to fix both backs to drive
+            rightBack.setPower(rightBackPower);
             // adds precesion mode when bumper pressed
-            //changed to try to make it faster
 
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-            telemetry.addData("intake wrust", intakeWristCount);
+            telemetry.addData("intake wrist", intakeWristCount);
             telemetry.update();
 
             if(gamepad1.right_trigger > 0)
             {
                 linSlideL.setDirection(DcMotorSimple.Direction.FORWARD);
                 linSlideR.setDirection(DcMotorSimple.Direction.REVERSE);
-                linSlideL.setPower(0.7);
-                linSlideR.setPower(0.7);
+                linSlideL.setPower(0.6);
+                linSlideR.setPower(0.6);
             }else if(gamepad1.left_trigger > 0)
             {
                 linSlideL.setDirection(DcMotorSimple.Direction.REVERSE);
                 linSlideR.setDirection(DcMotorSimple.Direction.FORWARD);
-                linSlideL.setPower(1.0);
-                linSlideR.setPower(1.0);
+                linSlideL.setPower(0.9);
+                linSlideR.setPower(0.9);
             }
             else{
                 linSlideL.setPower(0.05);
@@ -248,11 +247,10 @@ public class prototypeRobot extends LinearOpMode {
                 linSlideR.setPower(0.05);
             }
             if(gamepad2.a){
-                intakeWristCount++;
-                intakeWristServoControl();
-                while (gamepad2.a){
-                    intakeWristCount+=0;
-                }
+                intakeWristServo.setPosition(1);
+            }
+            if(gamepad2.b){
+                intakeWristServo.setPosition(0.0);
             }
             if(gamepad2.right_trigger > 0){
                 intakeArmServo.setPosition(1.0);
@@ -297,6 +295,7 @@ public class prototypeRobot extends LinearOpMode {
                 linSlideR.setPower(1);
                 sleep(999999999);
             }
+            telemetry.update();
 
         }
     }
