@@ -254,22 +254,22 @@ public class prototypeRobot extends LinearOpMode {
                     intakeWristCount+=0;
                 }
             }
-            if(gamepad2.right_trigger > 0){
+            if(gamepad2.left_trigger > 0){
                 intakeArmServo.setPosition(1.0);
             }
-            if(gamepad2.left_trigger > 0){
+            if(gamepad2.right_trigger > 0){
                 intakeArmServo.setPosition(0.0);
             }
             if(gamepad2.left_trigger == 0 && gamepad2.right_trigger == 0){
                 intakeArmServo.setPosition(0.5);
             }
-            if(gamepad2.left_bumper){
+            if(gamepad2.right_bumper){
                 intakeServo.setPosition(1.0);
             }
-            if(gamepad2.right_bumper){
+            if(gamepad2.left_bumper){
                 intakeServo.setPosition(0.0);
             }
-            if(gamepad2.x){
+            if(gamepad2.left_bumper == false && gamepad2.right_bumper == false){
                 intakeServo.setPosition(0.5);
             }
             if(gamepad1.a){

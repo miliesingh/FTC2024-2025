@@ -15,8 +15,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import java.util.Locale;
 
 // This is far side Blue
-@Autonomous(name="distanceFunctionSpecimenSide", group="Auto2024")
-public class distanceSpecimenSide extends LinearOpMode {
+@Autonomous(name="linAndDriveFunctionSpecimenSide", group="Auto2024")
+public class newSpecimenSideLinAndDrive extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor rightFront = null;
     private DcMotor leftFront = null;
@@ -32,6 +32,28 @@ public class distanceSpecimenSide extends LinearOpMode {
 
 
     GoBildaPinpointDriver odo;
+
+
+    public void linSlidesUp(double power){
+        linSlideL.setDirection(DcMotorSimple.Direction.FORWARD);
+        linSlideR.setDirection(DcMotorSimple.Direction.REVERSE);
+        linSlideL.setPower(power);
+        linSlideR.setPower(power);
+    }
+    public void linSlidesDown(double power){
+        linSlideL.setDirection(DcMotorSimple.Direction.REVERSE);
+        linSlideR.setDirection(DcMotorSimple.Direction.FORWARD);
+        linSlideL.setPower(power);
+        linSlideR.setPower(power);
+
+    }
+
+    public void linSlidesStay(){
+        linSlideL.setDirection(DcMotorSimple.Direction.FORWARD);
+        linSlideR.setDirection(DcMotorSimple.Direction.REVERSE);
+        linSlideL.setPower(0.05);
+        linSlideR.setPower(0.05);
+    }
 
     public void LINEAR_SLIDE_DRIVE(float distance_in_in, double power) {
         float ticksPerInch = 450.149432158f;
@@ -165,11 +187,15 @@ public class distanceSpecimenSide extends LinearOpMode {
         rightBack.setPower(0);
     }
 
-    public void driveForward(double power) {
-        leftBack.setPower(power);
-        rightFront.setPower(power);
-        leftFront.setPower(power);
-        rightBack.setPower(power);
+    public void driveForward(double power){
+        leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setPower(-power);
+        rightFront.setPower(-power);
+        leftFront.setPower(-power);
+        rightBack.setPower(-power);
     }
 
     public void driveBackwardCorrection(double angle, double power, int distance, double pos) {
@@ -251,7 +277,29 @@ public class distanceSpecimenSide extends LinearOpMode {
             telemetry.addData("Position", data);
             angle = (angleWrap(odo.getHeading()));
             odo.bulkUpdate();
-            driveForwardCorrection(angle, power, 500, pos.getPosition().x);
+            driveForward(power);
+            if (pos.getPosition().x >= newPos) {
+                break;
+            }
+            telemetry.update();
+        }
+        stopRobot();
+        telemetry.update();
+    }
+
+    public void driveForwardWithLinAndSlide(double drivePower, int newPos, double slidePower, int slideTime){
+        double angle;
+        driveForward(drivePower);
+        linSlidesUp(slidePower);
+        sleep(slideTime);
+        linSlidesStay();
+        while (true) { // go forward for the initial hang
+            Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+            telemetry.addData("Position", data);
+            angle = (angleWrap(odo.getHeading()));
+            odo.bulkUpdate();
+            driveForward(drivePower);
             if (pos.getPosition().x >= newPos) {
                 break;
             }
@@ -439,7 +487,7 @@ public class distanceSpecimenSide extends LinearOpMode {
             telemetry.addData("Position", data);
             angle = (angleWrap(odo.getHeading()));
             odo.bulkUpdate();
-            driveForwardCorrection(angle, power, 400, pos.getPosition().x);
+            driveForward(power);
             if (pos.getPosition().x <= newPos) {
                 break;
             }
@@ -506,28 +554,28 @@ public class distanceSpecimenSide extends LinearOpMode {
             clawWristServo.setPosition(Servo.MAX_POSITION);
             odo.bulkUpdate();
             sleep(333);
-            LINEAR_SLIDE_DRIVE(8f, 0.9);
-            driveForwardXIncrease(0.4, 550); // going up to hang the specimen
+            driveForwardWithLinAndSlide(0.3, 575, 1.0, 1550); // going up to hang the specimen
+            telemetry.update();
             LINEAR_SLIDE_DRIVE(3f, -0.7); // hanging the specimen
             clawServo.setPosition(0.5);
             clawWristServo.setPosition(Servo.MIN_POSITION);
             clawServo.setPosition(Servo.MAX_POSITION);
             driveBackwardXDecrease(0.2, 549); // backing up from hanging
             clawServo.setPosition(Servo.MIN_POSITION);
-            LINEAR_SLIDE_DRIVE(5f, -1);
+            LINEAR_SLIDE_DRIVE(4.5f, -1);
             telemetry.update();
             sleep(333);
             strafeRightYIncrease(0.6, 650);// strafing right to the first block
             clawWristServo.setPosition(1.0);
             clawWristServo.setPosition(Servo.MAX_POSITION);
             angleCorrectionFacingZeroRight(0.2);
-            driveForwardXIncrease(0.6, 1150); // driving over the first block
+            driveForwardWithLinAndSlide(0.6, 1150, -1.0, 700); // driving over the first block
             clawWristServo.setPosition(0.0);
             clawWristServo.setPosition(Servo.MIN_POSITION);
             strafeRightYIncrease(0.6, 900); // strafing over the first block
             clawWristServo.setPosition(0.0);
             clawWristServo.setPosition(Servo.MIN_POSITION);
-            driveBackwardXDecrease(0.7, 380); // pushing the first block into the human player zone
+            driveBackwardXDecrease(0.7, 380); // pushing the first block into the player zone
             driveForwardXIncrease(0.4, 500); // going out of the human player zone
             turnAroundRightZeroTo180(0.4); // turning around
             sleep(500);
@@ -540,7 +588,7 @@ public class distanceSpecimenSide extends LinearOpMode {
             clawWristServo.setPosition(1.0);// putting the thing up
             turnAroundLogic180ToZero(0.6);
             strafeLeftYDecrease(0.8, -50); // going back over to hang the block
-            angleCorrectionFacingZeroBothSides(0.2);
+            angleCorrectionFacingZeroBothSides(0.1);
             LINEAR_SLIDE_DRIVE(8f, 1);
             controlDistance(32, 0.4); // going forward to hang the block
             LINEAR_SLIDE_DRIVE(3f, -0.7); // hanging the specimen
