@@ -34,6 +34,7 @@ public class prototypeRobot extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
 
+    // I used this function to try a preset, but it doesn't actually work
     public void LINEAR_SLIDE_DRIVE(float distance_in_in, double power) {
         float ticksPerInch = 450.149432158f;
         float f_ticks = ticksPerInch * distance_in_in;
@@ -76,7 +77,7 @@ public class prototypeRobot extends LinearOpMode {
         }
 
     }
-
+    // preset to move the slides to the blocks height on the wall
     public void moveSlideToPosition(){
         linSlideL.setDirection(DcMotorSimple.Direction.FORWARD);
         linSlideR.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -88,7 +89,7 @@ public class prototypeRobot extends LinearOpMode {
     }
 
 
-
+    // this was the intake for the arm going out and in - never actually use
     public void intakeArmControl(){
         if(intakeArmServoCount % 4 == 0){
             intakeArmServo.setPosition(0.5);
@@ -108,6 +109,7 @@ public class prototypeRobot extends LinearOpMode {
             intakeArmServo.setPosition(0.5);
         }
     }
+    // test function for the intake servo to spin
     public void intakeServoControl(){
         if(intakeServoCount % 4 == 0){
             intakeServo.setPosition(0.7);
@@ -122,6 +124,7 @@ public class prototypeRobot extends LinearOpMode {
             intakeServo.setPosition(0.5);
         }
     }
+    // function to move the claw wrist up and down
     public void clawWristServoControl(){
         if(clawWristServoCount % 2 == 0){
             clawWristServo.setPosition(Servo.MIN_POSITION);
@@ -130,6 +133,7 @@ public class prototypeRobot extends LinearOpMode {
             clawWristServo.setPosition(Servo.MAX_POSITION);
         }
     }
+    // function to pinch and unpinch the claw
     public void clawControl(){
         if(clawCount % 2 == 0){
             clawServo.setPosition(Servo.MIN_POSITION);
@@ -138,6 +142,7 @@ public class prototypeRobot extends LinearOpMode {
             clawServo.setPosition(Servo.MAX_POSITION);
         }
     }
+    // function to move the intake wrist up and down
     public void intakeWristServoControl(){
         if(intakeWristCount % 2 == 0){
             intakeWristServo.setPosition(0.5);
@@ -153,6 +158,7 @@ public class prototypeRobot extends LinearOpMode {
         telemetry.addData("clawCount", clawCount);
         telemetry.update();
 
+        // setting all of the hardware
         leftFront = hardwareMap.get(DcMotor.class, "leftFront");
         rightFront = hardwareMap.get(DcMotor.class, "rightFront");
         leftBack = hardwareMap.get(DcMotor.class, "leftBack");
@@ -229,50 +235,61 @@ public class prototypeRobot extends LinearOpMode {
             telemetry.update();
 
             if(gamepad1.right_trigger > 0)
-            {
+            {// if the right trigger is pressed, the slides move up
                 linSlideL.setDirection(DcMotorSimple.Direction.FORWARD);
                 linSlideR.setDirection(DcMotorSimple.Direction.REVERSE);
                 linSlideL.setPower(0.7);
                 linSlideR.setPower(0.7);
             }else if(gamepad1.left_trigger > 0)
             {
+                // left trigger the slides move down
                 linSlideL.setDirection(DcMotorSimple.Direction.REVERSE);
                 linSlideR.setDirection(DcMotorSimple.Direction.FORWARD);
                 linSlideL.setPower(1.0);
                 linSlideR.setPower(1.0);
             }
             else{
+                // slides hold if neither are touched
                 linSlideL.setPower(0.05);
                 linSlideL.setDirection(DcMotorSimple.Direction.FORWARD);
                 linSlideR.setDirection(DcMotorSimple.Direction.REVERSE);
                 linSlideR.setPower(0.05);
             }
             if(gamepad2.a){
+                // moved the wrist up and down
                 intakeWristCount++;
                 intakeWristServoControl();
                 while (gamepad2.a){
+                    // so the buttons dont stick
                     intakeWristCount+=0;
                 }
             }
             if(gamepad2.left_trigger > 0){
+                // moving the intake out
                 intakeArmServo.setPosition(1.0);
             }
             if(gamepad2.right_trigger > 0){
+                // moving the intake arm back in
                 intakeArmServo.setPosition(0.0);
             }
             if(gamepad2.left_trigger == 0 && gamepad2.right_trigger == 0){
+                // if neither are touched, then the intake stays where it is
                 intakeArmServo.setPosition(0.5);
             }
             if(gamepad2.right_bumper){
+                // intake is on
                 intakeServo.setPosition(1.0);
             }
             if(gamepad2.left_bumper){
+                // intake is out
                 intakeServo.setPosition(0.0);
             }
             if(gamepad2.left_bumper == false && gamepad2.right_bumper == false){
+                // if neither are touched the intake doesn't move
                 intakeServo.setPosition(0.5);
             }
             if(gamepad1.a){
+                // opening and closing the claw
                 clawCount++;
                 clawControl();
                 while(gamepad1.a){
@@ -281,6 +298,7 @@ public class prototypeRobot extends LinearOpMode {
                 telemetry.update();
             }
             if(gamepad1.right_bumper){
+                // moving the claw up and down
                 clawWristServoCount++;
                 clawWristServoControl();
                 while(gamepad1.right_bumper){
@@ -288,9 +306,12 @@ public class prototypeRobot extends LinearOpMode {
                 }
             }
             if(gamepad1.x){
+                // preset to move the slides to the blocks height
                 moveSlideToPosition();
             }
             if(gamepad1.left_bumper){
+                // preset for the slides to hold at the end of the game
+                // ONLY PRESS AT THE END OF THE GAME
                 linSlideL.setDirection(DcMotorSimple.Direction.REVERSE);
                 linSlideR.setDirection(DcMotorSimple.Direction.FORWARD);
                 linSlideL.setPower(1);
