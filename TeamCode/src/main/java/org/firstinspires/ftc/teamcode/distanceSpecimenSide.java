@@ -550,12 +550,12 @@ public class distanceSpecimenSide extends LinearOpMode {
             odo.bulkUpdate();
             sleep(333);
             LINEAR_SLIDE_DRIVE(8f, 0.9);
-            driveForwardXIncrease(0.4, 550); // going up to hang the specimen
+            driveForwardXIncrease(0.4, 530); // going up to hang the specimen
             LINEAR_SLIDE_DRIVE(3f, -0.7); // hanging the specimen
             clawServo.setPosition(0.5);
             clawWristServo.setPosition(Servo.MIN_POSITION);
             clawServo.setPosition(Servo.MAX_POSITION);
-            driveBackwardXDecrease(0.2, 549); // backing up from hanging
+            driveBackwardXDecrease(0.2, 529); // backing up from hanging
             clawServo.setPosition(Servo.MIN_POSITION);
             LINEAR_SLIDE_DRIVE(5f, -1);
             telemetry.update();
@@ -585,7 +585,7 @@ public class distanceSpecimenSide extends LinearOpMode {
             strafeLeftYDecrease(0.8, -50); // going back over to hang the block
             angleCorrectionFacingZeroBothSides(0.2);
             LINEAR_SLIDE_DRIVE(8f, 1);
-            controlDistance(32, 0.4); // going forward to hang the block
+            controlDistance(34, 0.4); // going forward to hang the block
             LINEAR_SLIDE_DRIVE(3f, -0.7); // hanging the specimen
             clawServo.setPosition(Servo.MAX_POSITION);
             sleep(500);
