@@ -811,6 +811,7 @@ public class newSampleSide extends LinearOpMode {
             angleCorrectionFacingZeroBothSides(0.3);// turning back
             turnDegrees(35, -0.3); //turning to put the block into the basket
             clawServo.setPosition(Servo.MAX_POSITION);
+            sleep(500);
             angleCorrectionFacingZeroBothSides(0.3); // turning back around
             clawServo.setPosition(Servo.MIN_POSITION);
             LINEAR_SLIDE_DRIVE(8f, -0.9);

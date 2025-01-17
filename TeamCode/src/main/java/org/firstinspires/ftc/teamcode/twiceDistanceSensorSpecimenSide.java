@@ -15,8 +15,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import java.util.Locale;
 
 // This is for the specimen side
-@Autonomous(name="distanceFunctionSpecimenSide", group="Auto2024")
-public class distanceSpecimenSide extends LinearOpMode {
+@Autonomous(name="twiceDistanceSensorSpecimenSide", group="Auto2024")
+public class twiceDistanceSensorSpecimenSide extends LinearOpMode {
     // setting the objects
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor rightFront = null;
@@ -33,6 +33,16 @@ public class distanceSpecimenSide extends LinearOpMode {
 
     // setting the odometry object
     GoBildaPinpointDriver odo;
+    // function that moves the slides to the position of the specimen on the wall
+    public void moveSlideToPosition(){
+        linSlideL.setDirection(DcMotorSimple.Direction.FORWARD);
+        linSlideR.setDirection(DcMotorSimple.Direction.REVERSE);
+        linSlideL.setPower(0.7);
+        linSlideR.setPower(0.7);
+        sleep(333);
+        linSlideL.setPower(0.05);
+        linSlideR.setPower(0.05);
+    }
 
     //below is the linear slider function - only problem is that it has to go one step at a time
     public void LINEAR_SLIDE_DRIVE(float distance_in_in, double power) {
@@ -563,37 +573,40 @@ public class distanceSpecimenSide extends LinearOpMode {
             strafeRightYIncrease(0.6, 650);// strafing right to the first block
             clawWristServo.setPosition(1.0);
             clawWristServo.setPosition(Servo.MAX_POSITION);
+            LINEAR_SLIDE_DRIVE(2f, 1);
+            clawServo.setPosition(Servo.MAX_POSITION);
             angleCorrectionFacingZeroRight(0.2);
             driveForwardXIncrease(0.6, 1150); // driving over the first block
-            clawWristServo.setPosition(0.0);
-            clawWristServo.setPosition(Servo.MIN_POSITION);
             strafeRightYIncrease(0.6, 900); // strafing over the first block
-            clawWristServo.setPosition(0.0);
-            clawWristServo.setPosition(Servo.MIN_POSITION);
             driveBackwardXDecrease(0.7, 360); // pushing the first block into the human player zone
             driveForwardXIncrease(0.4, 500); // going out of the human player zone
             turnAroundRightZeroTo180(0.4); // turning around
             sleep(500);
             telemetry.update();
-            clawServo.setPosition(1); // opening the claw
-            sleep(1000);
-            driveForwardXDecrease(0.4, -100); // grabbing the block
-            clawServo.setPosition(0.0); // grabbing block
-            sleep(500);
-            clawWristServo.setPosition(1.0);// putting the thing up
-            turnAroundLogic180ToZero(0.6);
-            strafeLeftYDecrease(0.8, -50); // going back over to hang the block
-            angleCorrectionFacingZeroBothSides(0.2);
-            LINEAR_SLIDE_DRIVE(8f, 1);
-            controlDistance(34, 0.4); // going forward to hang the block
-            LINEAR_SLIDE_DRIVE(3f, -0.7); // hanging the specimen
-            clawServo.setPosition(Servo.MAX_POSITION);
-            sleep(500);
-            clawWristServo.setPosition(Servo.MIN_POSITION);
-            clawServo.setPosition(Servo.MAX_POSITION);
-            driveBackwardXDecrease(0.2, 559); // backing up from hanging
+            controlDistance(27, 0.3);
             clawServo.setPosition(Servo.MIN_POSITION);
-            LINEAR_SLIDE_DRIVE(5f, -1);
+            sleep(500);
+            LINEAR_SLIDE_DRIVE(2f, 1);
+            sleep(999999);
+//            clawServo.setPosition(1); // opening the claw
+//            sleep(1000);
+//            driveForwardXDecrease(0.4, -100); // grabbing the block
+//            clawServo.setPosition(0.0); // grabbing block
+//            sleep(500);
+//            clawWristServo.setPosition(1.0);// putting the thing up
+//            turnAroundLogic180ToZero(0.6);
+//            strafeLeftYDecrease(0.8, -50); // going back over to hang the block
+//            angleCorrectionFacingZeroBothSides(0.2);
+//            LINEAR_SLIDE_DRIVE(8f, 1);
+//            controlDistance(34, 0.4); // going forward to hang the block
+//            LINEAR_SLIDE_DRIVE(3f, -0.7); // hanging the specimen
+//            clawServo.setPosition(Servo.MAX_POSITION);
+//            sleep(500);
+//            clawWristServo.setPosition(Servo.MIN_POSITION);
+//            clawServo.setPosition(Servo.MAX_POSITION);
+//            driveBackwardXDecrease(0.2, 559); // backing up from hanging
+//            clawServo.setPosition(Servo.MIN_POSITION);
+//            LINEAR_SLIDE_DRIVE(5f, -1);
         }
 
     }
