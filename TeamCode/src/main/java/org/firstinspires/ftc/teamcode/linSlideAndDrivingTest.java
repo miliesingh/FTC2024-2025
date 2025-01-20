@@ -118,12 +118,77 @@ public class linSlideAndDrivingTest extends LinearOpMode {
 
         waitForStart();
         runtime.reset();
+        linSlideL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linSlideL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linSlideR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linSlideR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         if(opModeIsActive()){
-            linSlidesUp(1.0);
-            sleep(1550);
+            float ticksPerInch = 450.149432158f;
+            float f_ticks = ticksPerInch * 5;
+            int ticks = Math.round(f_ticks);
+            linSlideL.setTargetPosition(ticks);
+            linSlideR.setTargetPosition(ticks);
+            while(true){
+                driveForward(0.2);
+                if((linSlideR.getCurrentPosition() >= linSlideR.getTargetPosition() - 50) && linSlideL.getCurrentPosition() >= (linSlideL.getTargetPosition() - 50)){
+                    break;
+                }
+                else {
+                    linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    linSlidesUp(1.0);
+                    linSlideL.setTargetPosition(ticks);
+                    linSlideR.setTargetPosition(ticks);
+                }
+
+            }
             linSlidesStay();
-            sleep(999999);
+            sleep(1000);
+            ticksPerInch = 450.149432158f;
+            f_ticks = ticksPerInch * 2;
+            ticks = Math.round(f_ticks);
+            linSlideL.setTargetPosition(ticks);
+            linSlideR.setTargetPosition(ticks);
+            while(true){
+                driveForward(0.2);
+                if((linSlideR.getCurrentPosition() <= linSlideR.getTargetPosition()) && linSlideL.getCurrentPosition() <= (linSlideL.getTargetPosition())){
+                    break;
+                }
+                else {
+                    linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    linSlidesUp(-1.0);
+                    linSlideL.setTargetPosition(ticks);
+                    linSlideR.setTargetPosition(ticks);
+                }
+
+            }
+            linSlidesStay();
+            sleep(1000);
+            ticksPerInch = 450.149432158f;
+            f_ticks = ticksPerInch * 7;
+            ticks = Math.round(f_ticks);
+            linSlideL.setTargetPosition(ticks);
+            linSlideR.setTargetPosition(ticks);
+            while(true){
+                driveForward(0.2);
+                if((linSlideR.getCurrentPosition() >= linSlideR.getTargetPosition()) && linSlideL.getCurrentPosition() >= (linSlideL.getTargetPosition())){
+                    break;
+                }
+                else {
+                    linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    linSlidesUp(1.0);
+                    linSlideL.setTargetPosition(ticks);
+                    linSlideR.setTargetPosition(ticks);
+                }
+
+            }
+            linSlidesStay();
+            sleep(9999999);
 
         }
 

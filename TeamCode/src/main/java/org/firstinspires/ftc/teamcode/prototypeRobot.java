@@ -145,7 +145,7 @@ public class prototypeRobot extends LinearOpMode {
     // function to move the intake wrist up and down
     public void intakeWristServoControl(){
         if(intakeWristCount % 2 == 0){
-            intakeWristServo.setPosition(0.5);
+            intakeWristServo.setPosition(Servo.MAX_POSITION);
         }
         if(intakeWristCount % 2 == 1){
             intakeWristServo.setPosition(Servo.MIN_POSITION);
@@ -219,10 +219,10 @@ public class prototypeRobot extends LinearOpMode {
 
 
             // Send calculated power to wheels
-            leftFront.setPower(leftFrontPower*1.1);
-            rightFront.setPower(rightFrontPower*1.1);
-            leftBack.setPower(leftBackPower*1.1); // had to fix both backs to drive
-            rightBack.setPower(rightBackPower*1.1);
+            leftFront.setPower(leftFrontPower*1.2);
+            rightFront.setPower(rightFrontPower*1.2);
+            leftBack.setPower(leftBackPower*1.2); // had to fix both backs to drive
+            rightBack.setPower(rightBackPower*1.2);
             // adds precesion mode when bumper pressed
             //changed to try to make it faster
 
@@ -238,8 +238,8 @@ public class prototypeRobot extends LinearOpMode {
             {// if the right trigger is pressed, the slides move up
                 linSlideL.setDirection(DcMotorSimple.Direction.FORWARD);
                 linSlideR.setDirection(DcMotorSimple.Direction.REVERSE);
-                linSlideL.setPower(0.7);
-                linSlideR.setPower(0.7);
+                linSlideL.setPower(0.8);
+                linSlideR.setPower(0.8);
             }else if(gamepad1.left_trigger > 0)
             {
                 // left trigger the slides move down

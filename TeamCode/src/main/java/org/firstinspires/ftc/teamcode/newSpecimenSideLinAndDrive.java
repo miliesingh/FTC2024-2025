@@ -28,6 +28,8 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
     private Servo clawWristServo = null;
     private Servo clawServo = null;
 
+    private Servo intakeWristServo = null;
+
     private DistanceSensor sensorRange;
 
 
@@ -51,8 +53,8 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
     public void linSlidesStay(){
         linSlideL.setDirection(DcMotorSimple.Direction.FORWARD);
         linSlideR.setDirection(DcMotorSimple.Direction.REVERSE);
-        linSlideL.setPower(0.05);
-        linSlideR.setPower(0.05);
+        linSlideL.setPower(0.07);
+        linSlideR.setPower(0.07);
     }
 
     public void LINEAR_SLIDE_DRIVE(float distance_in_in, double power) {
@@ -287,12 +289,21 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         telemetry.update();
     }
 
-    public void driveForwardWithLinAndSlide(double drivePower, int newPos, double slidePower, int slideTime){
+    public void driveForwardWithLinAndSlideUp(double drivePower, int newPos, double slidePower, double inches){
         double angle;
-        driveForward(drivePower);
-        linSlidesUp(slidePower);
-        sleep(slideTime);
-        linSlidesStay();
+        linSlideL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linSlideL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linSlideR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linSlideR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        float ticksPerInch = 450.149432158f;
+        float f_ticks = (float) (ticksPerInch * inches);
+        int ticks = Math.round(f_ticks);
+        linSlideL.setTargetPosition(ticks);
+        linSlideR.setTargetPosition(ticks);
+
         while (true) { // go forward for the initial hang
             Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
             String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
@@ -300,11 +311,22 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
             angle = (angleWrap(odo.getHeading()));
             odo.bulkUpdate();
             driveForward(drivePower);
+            if((linSlideR.getCurrentPosition() >= linSlideR.getTargetPosition()) && linSlideL.getCurrentPosition() >= (linSlideL.getTargetPosition())){
+                linSlidesStay();
+            }
+            else {
+                linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                linSlidesUp(slidePower);
+                linSlideL.setTargetPosition(ticks);
+                linSlideR.setTargetPosition(ticks);
+            }
             if (pos.getPosition().x >= newPos) {
                 break;
             }
             telemetry.update();
         }
+        linSlidesStay();
         stopRobot();
         telemetry.update();
     }
@@ -348,6 +370,50 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         telemetry.update();
     }
 
+    public void strafeRightYIncreaseSlideDown(double power, int newPos, double slidePower, double slidePlace) {
+        double angle;
+        linSlideL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linSlideL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linSlideR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linSlideR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        float ticksPerInch = 450.149432158f;
+        float f_ticks = (float) (ticksPerInch * slidePlace);
+        int ticks = Math.round(f_ticks);
+        linSlideL.setTargetPosition(ticks);
+        linSlideR.setTargetPosition(ticks);
+        while (true) { // strafe to the blocks place
+            Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+            telemetry.addData("Position", data);
+            telemetry.addData("Slides Current Position", linSlideR.getCurrentPosition());
+            telemetry.addData("Slides Target Position", linSlideR.getTargetPosition());
+            angle = (angleWrap(odo.getHeading()));
+            odo.bulkUpdate();
+            if((linSlideR.getCurrentPosition() <= linSlideR.getTargetPosition()) && linSlideL.getCurrentPosition() <= (linSlideL.getTargetPosition())){
+                linSlidesStay();
+            }
+            else {
+                linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                linSlidesUp(-slidePower);
+                linSlideL.setTargetPosition(ticks);
+                linSlideR.setTargetPosition(ticks);
+            }
+            strafeRight(power);
+            if (pos.getPosition().y >= newPos) {
+                break;
+            }
+            telemetry.update();
+        }
+        linSlidesStay();
+        stopRobot();
+        telemetry.update();
+    }
+
+
     public void strafeLeftYDecrease(double power, int newPos){
         double angle;
         while (true) { // strafe over to the hanging thing
@@ -365,6 +431,49 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
             }
             telemetry.update();
         }
+        stopRobot();
+        telemetry.update();
+    }
+
+    public void strafeLeftYDecreaseSlideUp(double power, int newPos, double slidePower, double inches){
+        double angle;
+
+        linSlideL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linSlideL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linSlideR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linSlideR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        float ticksPerInch = 450.149432158f;
+        float f_ticks = (float) (ticksPerInch * inches);
+        int ticks = Math.round(f_ticks);
+        linSlideL.setTargetPosition(ticks);
+        linSlideR.setTargetPosition(ticks);
+
+        while (true) { // strafe over to the hanging thing
+            Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+            telemetry.addData("Position", data);
+            angle = (angleWrap(odo.getHeading()));
+            odo.bulkUpdate();
+            if((linSlideR.getCurrentPosition() >= linSlideR.getTargetPosition()) && linSlideL.getCurrentPosition() >= (linSlideL.getTargetPosition())){
+                linSlidesStay();
+            }
+            else {
+                linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                linSlidesUp(slidePower);
+                linSlideL.setTargetPosition(ticks);
+                linSlideR.setTargetPosition(ticks);
+            }
+            strafeRight(-power);
+            if (pos.getPosition().y <= newPos) {
+                break;
+            }
+            telemetry.update();
+        }
+        linSlidesStay();
         stopRobot();
         telemetry.update();
     }
@@ -524,9 +633,20 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         clawWristServo = hardwareMap.get(Servo.class, "clawWristServo");
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         sensorRange = hardwareMap.get(DistanceSensor.class, "distanceSensor");
+        intakeWristServo = hardwareMap.get(Servo.class, "intakeWristServo");
 
         waitForStart();
         runtime.reset();
+
+        //setting encoders for the linear slides
+        linSlideL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linSlideL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linSlideR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linSlideR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
         odo.setOffsets(65.0, -130); //these are tuned for 3110-0002-0001 Product Insight #1
 
         /*
@@ -547,6 +667,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
         clawServo.setPosition(Servo.MAX_POSITION);
+        intakeWristServo.setPosition(Servo.MIN_POSITION);
         odo.resetPosAndIMU();
         double angle = angleWrap(odo.getHeading());
         if (opModeIsActive()) {
@@ -554,51 +675,66 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
             clawWristServo.setPosition(Servo.MAX_POSITION);
             odo.bulkUpdate();
             sleep(333);
-            driveForwardWithLinAndSlide(0.3, 575, 1.0, 1550); // going up to hang the specimen
+            driveForwardWithLinAndSlideUp(0.4, 560, 1.0, 7); // going up to hang the specimen
             telemetry.update();
-            LINEAR_SLIDE_DRIVE(3f, -0.7); // hanging the specimen
+            LINEAR_SLIDE_DRIVE(2f, -0.7); // hanging the specimen
             clawServo.setPosition(0.5);
             clawWristServo.setPosition(Servo.MIN_POSITION);
             clawServo.setPosition(Servo.MAX_POSITION);
-            driveBackwardXDecrease(0.2, 549); // backing up from hanging
+            driveBackwardXDecrease(0.5, 559); // backing up from hanging
             clawServo.setPosition(Servo.MIN_POSITION);
-            LINEAR_SLIDE_DRIVE(4.5f, -1);
             telemetry.update();
             sleep(333);
-            strafeRightYIncrease(0.6, 650);// strafing right to the first block
+            strafeRightYIncreaseSlideDown(0.6, 650, 1.0, -7);// strafing right to the first block
             clawWristServo.setPosition(1.0);
             clawWristServo.setPosition(Servo.MAX_POSITION);
-            angleCorrectionFacingZeroRight(0.2);
-            driveForwardWithLinAndSlide(0.6, 1150, -1.0, 700); // driving over the first block
-            clawWristServo.setPosition(0.0);
-            clawWristServo.setPosition(Servo.MIN_POSITION);
+            angleCorrectionFacingZeroRight(0.4);
+            driveForwardWithLinAndSlideUp(0.6, 1170, 1.0, 1.5); // driving over the first block
             strafeRightYIncrease(0.6, 900); // strafing over the first block
-            clawWristServo.setPosition(0.0);
-            clawWristServo.setPosition(Servo.MIN_POSITION);
             driveBackwardXDecrease(0.7, 380); // pushing the first block into the player zone
-            driveForwardXIncrease(0.4, 500); // going out of the human player zone
-            turnAroundRightZeroTo180(0.4); // turning around
+            driveForwardXIncrease(0.7, 500); // going out of the human player zone
+            turnAroundRightZeroTo180(0.5); // turning around
             sleep(500);
             telemetry.update();
             clawServo.setPosition(1); // opening the claw
-            sleep(1000);
-            driveForwardXDecrease(0.4, -100); // grabbing the block
+            controlDistance(37, 0.5); // grabbing the block
+            stopRobot();
             clawServo.setPosition(0.0); // grabbing block
             sleep(500);
             clawWristServo.setPosition(1.0);// putting the thing up
+            LINEAR_SLIDE_DRIVE(0.5f, 1.0);
             turnAroundLogic180ToZero(0.6);
-            strafeLeftYDecrease(0.8, -50); // going back over to hang the block
+            strafeLeftYDecreaseSlideUp(0.9, 50, 1.0, 6); // going back over to hang the block
             angleCorrectionFacingZeroBothSides(0.1);
-            LINEAR_SLIDE_DRIVE(8f, 1);
-            controlDistance(32, 0.4); // going forward to hang the block
+            controlDistance(37, 0.5); // going forward to hang the block
             LINEAR_SLIDE_DRIVE(3f, -0.7); // hanging the specimen
             clawServo.setPosition(Servo.MAX_POSITION);
             sleep(500);
             clawWristServo.setPosition(Servo.MIN_POSITION);
             clawServo.setPosition(Servo.MAX_POSITION);
-            driveBackwardXDecrease(0.2, 559); // backing up from hanging
+            driveBackwardXDecrease(0.4, 559); // backing up from hanging
             clawServo.setPosition(Servo.MIN_POSITION);
-            LINEAR_SLIDE_DRIVE(5f, -1);
+            strafeRightYIncreaseSlideDown(0.8, 900, 1.0, -3.75);
+            turnAroundRightZeroTo180(0.6);
+            clawServo.setPosition(Servo.MAX_POSITION);
+            clawWristServo.setPosition(Servo.MAX_POSITION);
+            controlDistance(37, 0.5); // grabbing the block
+            stopRobot();
+            clawServo.setPosition(0.0); // grabbing block
+            sleep(500);
+            clawWristServo.setPosition(1.0);// putting the thing up
+            LINEAR_SLIDE_DRIVE(0.5f, 1.0);
+            turnAroundLogic180ToZero(0.6);
+            strafeLeftYDecreaseSlideUp(0.9, 20, 1.0, 6); // going back over to hang the block
+            angleCorrectionFacingZeroBothSides(0.1);
+            controlDistance(37, 0.5); // going forward to hang the block
+            LINEAR_SLIDE_DRIVE(3f, -0.7); // hanging the specimen
+            clawServo.setPosition(Servo.MAX_POSITION);
+            sleep(500);
+            clawWristServo.setPosition(Servo.MIN_POSITION);
+            clawServo.setPosition(Servo.MAX_POSITION);
+            driveBackwardXDecrease(0.3, 559); // backing up from hanging
+
         }
 
 
