@@ -219,10 +219,10 @@ public class prototypeRobot extends LinearOpMode {
 
 
             // Send calculated power to wheels
-            leftFront.setPower(leftFrontPower*1.2);
-            rightFront.setPower(rightFrontPower*1.2);
-            leftBack.setPower(leftBackPower*1.2); // had to fix both backs to drive
-            rightBack.setPower(rightBackPower*1.2);
+            leftFront.setPower(leftFrontPower*1.6);
+            rightFront.setPower(rightFrontPower*1.6);
+            leftBack.setPower(leftBackPower*1.6); // had to fix both backs to drive
+            rightBack.setPower(rightBackPower*1.6);
             // adds precesion mode when bumper pressed
             //changed to try to make it faster
 
@@ -238,8 +238,8 @@ public class prototypeRobot extends LinearOpMode {
             {// if the right trigger is pressed, the slides move up
                 linSlideL.setDirection(DcMotorSimple.Direction.FORWARD);
                 linSlideR.setDirection(DcMotorSimple.Direction.REVERSE);
-                linSlideL.setPower(0.8);
-                linSlideR.setPower(0.8);
+                linSlideL.setPower(1);
+                linSlideR.setPower(1);
             }else if(gamepad1.left_trigger > 0)
             {
                 // left trigger the slides move down

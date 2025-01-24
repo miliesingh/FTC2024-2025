@@ -681,7 +681,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
             clawServo.setPosition(0.5);
             clawWristServo.setPosition(Servo.MIN_POSITION);
             clawServo.setPosition(Servo.MAX_POSITION);
-            driveBackwardXDecrease(0.5, 559); // backing up from hanging
+            driveBackwardXDecrease(0.5, 562); // backing up from hanging
             clawServo.setPosition(Servo.MIN_POSITION);
             telemetry.update();
             sleep(333);
@@ -690,14 +690,14 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
             clawWristServo.setPosition(Servo.MAX_POSITION);
             angleCorrectionFacingZeroRight(0.4);
             driveForwardWithLinAndSlideUp(0.6, 1170, 1.0, 1.5); // driving over the first block
-            strafeRightYIncrease(0.6, 900); // strafing over the first block
-            driveBackwardXDecrease(0.7, 380); // pushing the first block into the player zone
+            strafeRightYIncrease(0.6, 850); // strafing over the first block
+            driveBackwardXDecrease(0.7, 340); // pushing the first block into the player zone
             driveForwardXIncrease(0.7, 500); // going out of the human player zone
             turnAroundRightZeroTo180(0.5); // turning around
             sleep(500);
             telemetry.update();
             clawServo.setPosition(1); // opening the claw
-            controlDistance(37, 0.5); // grabbing the block
+            controlDistance(39, 0.5); // grabbing the block
             stopRobot();
             clawServo.setPosition(0.0); // grabbing block
             sleep(500);
@@ -718,7 +718,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
             turnAroundRightZeroTo180(0.6);
             clawServo.setPosition(Servo.MAX_POSITION);
             clawWristServo.setPosition(Servo.MAX_POSITION);
-            controlDistance(37, 0.5); // grabbing the block
+            controlDistance(39, 0.5); // grabbing the block
             stopRobot();
             clawServo.setPosition(0.0); // grabbing block
             sleep(500);
