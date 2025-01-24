@@ -678,18 +678,16 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
             driveForwardWithLinAndSlideUp(0.4, 560, 1.0, 7); // going up to hang the specimen
             telemetry.update();
             LINEAR_SLIDE_DRIVE(2f, -0.7); // hanging the specimen
-            clawServo.setPosition(0.5);
-            clawWristServo.setPosition(Servo.MIN_POSITION);
             clawServo.setPosition(Servo.MAX_POSITION);
             driveBackwardXDecrease(0.5, 562); // backing up from hanging
             clawServo.setPosition(Servo.MIN_POSITION);
             telemetry.update();
             sleep(333);
-            strafeRightYIncreaseSlideDown(0.6, 650, 1.0, -7);// strafing right to the first block
+            strafeRightYIncreaseSlideDown(0.6, 650, 1.0, -5.5);// strafing right to the first block
             clawWristServo.setPosition(1.0);
             clawWristServo.setPosition(Servo.MAX_POSITION);
             angleCorrectionFacingZeroRight(0.4);
-            driveForwardWithLinAndSlideUp(0.6, 1170, 1.0, 1.5); // driving over the first block
+            driveForwardWithLinAndSlideUp(0.6, 1170, 0, 0); // driving over the first block
             strafeRightYIncrease(0.6, 850); // strafing over the first block
             driveBackwardXDecrease(0.7, 340); // pushing the first block into the player zone
             driveForwardXIncrease(0.7, 500); // going out of the human player zone
