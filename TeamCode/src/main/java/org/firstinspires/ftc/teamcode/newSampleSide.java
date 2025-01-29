@@ -100,15 +100,37 @@ public class newSampleSide extends LinearOpMode {
     }
     // just a function to strafe right - sets direction and power
     public void strafeRight(double power) {
-        leftBack.setPower(power);
-        rightFront.setPower(power);
-        leftFront.setPower(power);
-        rightBack.setPower(power);
         leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setPower(power);
+        rightFront.setPower(power);
+        leftFront.setPower(power);
+        rightBack.setPower(power);
+    }
 
+    public void strafeRightAndDiagonalUp(double power) {
+        leftBack.setPower(power/2);
+        rightFront.setPower(-power/2);
+        leftFront.setPower(-power);
+        rightBack.setPower(power);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
+
+    }
+
+    public void strafeRightAndDiagonalDown(double power) {
+        leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setPower(power);
+        rightFront.setPower(power);
+        leftFront.setPower(power/2);
+        rightBack.setPower(power/2);
     }
 
     // function so I don't have to stop moving forward while turning
@@ -690,6 +712,47 @@ public class newSampleSide extends LinearOpMode {
         stopRobot();
         telemetry.update();
     }
+
+    public void strafeRightYIncreaseAndDiagonalUp(double power, int newPos){
+        double angle;
+        while (true) { // strafe around first block
+            Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+            // creating the object
+            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+            telemetry.addData("Position", data);
+            // setting telemetry
+            angle = (angleWrap(odo.getHeading()));
+            odo.bulkUpdate();
+            strafeRightAndDiagonalUp(power);
+            // strafing until reaches position
+            if (pos.getPosition().y >= newPos) {
+                break;
+            }
+            telemetry.update();
+        }
+        stopRobot();
+        telemetry.update();
+    }
+    public void strafeRightYIncreaseAndDiagonalDown(double power, int newPos){
+        double angle;
+        while (true) { // strafe around first block
+            Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+            // creating the object
+            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+            telemetry.addData("Position", data);
+            // setting telemetry
+            angle = (angleWrap(odo.getHeading()));
+            odo.bulkUpdate();
+            strafeRightAndDiagonalDown(power);
+            // strafing until reaches position
+            if (pos.getPosition().y >= newPos) {
+                break;
+            }
+            telemetry.update();
+        }
+        stopRobot();
+        telemetry.update();
+    }
     // strafing right while sideways
     public void strafeRightXDecrease(double power, int newPos){
         double angle;
@@ -814,9 +877,13 @@ public class newSampleSide extends LinearOpMode {
             sleep(500);
             angleCorrectionFacingZeroBothSides(0.3); // turning back around
             clawServo.setPosition(Servo.MIN_POSITION);
-            LINEAR_SLIDE_DRIVE(8f, -0.9);
-            driveForwardYDecrease(0, 0); // just so i can see the telemetry
-            sleep(9999999);
+            LINEAR_SLIDE_DRIVE(6f, -0.9);// just so i can see the telemetry
+            strafeRight(0.8);
+            sleep(300);
+            strafeRightAndDiagonalDown(1);
+            telemetry.update();
+            sleep(2700);
+            stopRobot();
 
         }
 

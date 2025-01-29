@@ -154,6 +154,17 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
     }
+    public void strafeRightAndDiagonal(double power) {
+        leftBack.setPower(power/2);
+        rightFront.setPower(-power/2);
+        leftFront.setPower(-power);
+        rightBack.setPower(power);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
+
+    }
 
     public void softTurnLeft(double power) {
         leftBack.setPower(power / 2);
@@ -361,6 +372,26 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
                 break;
             }
             strafeRight(power);
+            if (pos.getPosition().y >= newPos) {
+                break;
+            }
+            telemetry.update();
+        }
+        stopRobot();
+        telemetry.update();
+    }
+    public void strafeRightYIncreaseAndDiagonal(double power, int newPos) {
+        double angle;
+        while (true) { // strafe to the blocks place
+            Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+            telemetry.addData("Position", data);
+            angle = (angleWrap(odo.getHeading()));
+            odo.bulkUpdate();
+            if (pos.getPosition().y >= newPos) {
+                break;
+            }
+            strafeRightAndDiagonal(power);
             if (pos.getPosition().y >= newPos) {
                 break;
             }
@@ -683,26 +714,26 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
             clawServo.setPosition(Servo.MIN_POSITION);
             telemetry.update();
             sleep(333);
-            strafeRightYIncreaseSlideDown(0.6, 650, 1.0, -5.5);// strafing right to the first block
+            strafeRightYIncreaseSlideDown(0.7, 600, 1.0, -3.5);// strafing right to the first block
             clawWristServo.setPosition(1.0);
             clawWristServo.setPosition(Servo.MAX_POSITION);
-            angleCorrectionFacingZeroRight(0.4);
-            driveForwardWithLinAndSlideUp(0.6, 1170, 0, 0); // driving over the first block
-            strafeRightYIncrease(0.6, 850); // strafing over the first block
-            driveBackwardXDecrease(0.7, 340); // pushing the first block into the player zone
-            driveForwardXIncrease(0.7, 500); // going out of the human player zone
+            angleCorrectionFacingZeroBothSides(0.4);
+            driveForwardWithLinAndSlideUp(0.7, 1100, 0, 0); // driving over the first block
+            strafeRightYIncrease(0.7, 840); // strafing over the first block
+            driveBackwardXDecrease(0.8, 330); // pushing the first block into the player zone
+            driveForwardXIncrease(0.8, 440); // going out of the human player zone
             turnAroundRightZeroTo180(0.5); // turning around
             sleep(500);
             telemetry.update();
             clawServo.setPosition(1); // opening the claw
-            controlDistance(39, 0.5); // grabbing the block
+            controlDistance(42, 0.6); // grabbing the block
             stopRobot();
             clawServo.setPosition(0.0); // grabbing block
             sleep(500);
             clawWristServo.setPosition(1.0);// putting the thing up
-            LINEAR_SLIDE_DRIVE(0.5f, 1.0);
+            LINEAR_SLIDE_DRIVE(1f, 1.0);
             turnAroundLogic180ToZero(0.6);
-            strafeLeftYDecreaseSlideUp(0.9, 50, 1.0, 6); // going back over to hang the block
+            strafeLeftYDecreaseSlideUp(0.9, 50, 1.0, 5.5); // going back over to hang the block
             angleCorrectionFacingZeroBothSides(0.1);
             controlDistance(37, 0.5); // going forward to hang the block
             LINEAR_SLIDE_DRIVE(3f, -0.7); // hanging the specimen
@@ -716,14 +747,14 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
             turnAroundRightZeroTo180(0.6);
             clawServo.setPosition(Servo.MAX_POSITION);
             clawWristServo.setPosition(Servo.MAX_POSITION);
-            controlDistance(39, 0.5); // grabbing the block
+            controlDistance(42, 0.6); // grabbing the block
             stopRobot();
             clawServo.setPosition(0.0); // grabbing block
             sleep(500);
             clawWristServo.setPosition(1.0);// putting the thing up
-            LINEAR_SLIDE_DRIVE(0.5f, 1.0);
+            LINEAR_SLIDE_DRIVE(1f, 1.0);
             turnAroundLogic180ToZero(0.6);
-            strafeLeftYDecreaseSlideUp(0.9, 20, 1.0, 6); // going back over to hang the block
+            strafeLeftYDecreaseSlideUp(0.9, 20, 1.0, 5.5); // going back over to hang the block
             angleCorrectionFacingZeroBothSides(0.1);
             controlDistance(37, 0.5); // going forward to hang the block
             LINEAR_SLIDE_DRIVE(3f, -0.7); // hanging the specimen
