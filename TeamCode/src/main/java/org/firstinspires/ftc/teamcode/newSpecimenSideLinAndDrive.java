@@ -706,7 +706,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
             clawWristServo.setPosition(Servo.MAX_POSITION);
             odo.bulkUpdate();
             sleep(333);
-            driveForwardWithLinAndSlideUp(0.4, 560, 1.0, 7); // going up to hang the specimen
+            driveForwardWithLinAndSlideUp(0.4, 560, 1.0, 8); // going up to hang the specimen
             telemetry.update();
             LINEAR_SLIDE_DRIVE(2f, -0.7); // hanging the specimen
             clawServo.setPosition(Servo.MAX_POSITION);
@@ -714,7 +714,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
             clawServo.setPosition(Servo.MIN_POSITION);
             telemetry.update();
             sleep(333);
-            strafeRightYIncreaseSlideDown(0.7, 600, 1.0, -3.5);// strafing right to the first block
+            strafeRightYIncreaseSlideDown(0.7, 600, 1.0, -3.6);// strafing right to the first block
             clawWristServo.setPosition(1.0);
             clawWristServo.setPosition(Servo.MAX_POSITION);
             angleCorrectionFacingZeroBothSides(0.4);
@@ -726,14 +726,14 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
             sleep(500);
             telemetry.update();
             clawServo.setPosition(1); // opening the claw
-            controlDistance(42, 0.6); // grabbing the block
+            controlDistance(46, 0.6); // grabbing the block
             stopRobot();
             clawServo.setPosition(0.0); // grabbing block
             sleep(500);
             clawWristServo.setPosition(1.0);// putting the thing up
-            LINEAR_SLIDE_DRIVE(1f, 1.0);
+            LINEAR_SLIDE_DRIVE(2f, 1.0);
             turnAroundLogic180ToZero(0.6);
-            strafeLeftYDecreaseSlideUp(0.9, 50, 1.0, 5.5); // going back over to hang the block
+            strafeLeftYDecreaseSlideUp(0.9, 50, 1.0, 4.5); // going back over to hang the block
             angleCorrectionFacingZeroBothSides(0.1);
             controlDistance(37, 0.5); // going forward to hang the block
             LINEAR_SLIDE_DRIVE(3f, -0.7); // hanging the specimen
@@ -747,14 +747,14 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
             turnAroundRightZeroTo180(0.6);
             clawServo.setPosition(Servo.MAX_POSITION);
             clawWristServo.setPosition(Servo.MAX_POSITION);
-            controlDistance(42, 0.6); // grabbing the block
+            controlDistance(48, 0.6); // grabbing the block
             stopRobot();
             clawServo.setPosition(0.0); // grabbing block
             sleep(500);
             clawWristServo.setPosition(1.0);// putting the thing up
-            LINEAR_SLIDE_DRIVE(1f, 1.0);
+            LINEAR_SLIDE_DRIVE(2f, 1.0);
             turnAroundLogic180ToZero(0.6);
-            strafeLeftYDecreaseSlideUp(0.9, 20, 1.0, 5.5); // going back over to hang the block
+            strafeLeftYDecreaseSlideUp(0.9, 20, 1.0, 4.5); // going back over to hang the block
             angleCorrectionFacingZeroBothSides(0.1);
             controlDistance(37, 0.5); // going forward to hang the block
             LINEAR_SLIDE_DRIVE(3f, -0.7); // hanging the specimen

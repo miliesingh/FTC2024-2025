@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@TeleOp(name = "swerveBlueTest", group = "TeleOp2024")
-public class swerveTest extends LinearOpMode {
+@TeleOp(name = "swerveRedTest", group = "TeleOp2024")
+public class swerveRedTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // Declare our motors
@@ -30,12 +30,14 @@ public class swerveTest extends LinearOpMode {
         IMU imu = hardwareMap.get(IMU.class, "imu");
         // Adjust the orientation parameters to match your robot
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
+                RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD,
                 RevHubOrientationOnRobot.UsbFacingDirection.UP));
         // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
         imu.initialize(parameters);
 
         waitForStart();
+
+
 
         if (isStopRequested()) return;
 
@@ -68,14 +70,13 @@ public class swerveTest extends LinearOpMode {
             double frontRightPower = (rotY - rotX - rx) / denominator;
             double backRightPower = (rotY + rotX - rx) / denominator;
 
-            telemetry.addData("Y, X, RX, Yaw", "%4.2f, %4.2f, %4.2f, %4.2f", y, x, rx, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+            telemetry.addData("Y, X, RX", "%4.2f, %4.2f, %4.2f", y, x, rx);
             telemetry.update();
 
-            frontLeftMotor.setPower(frontLeftPower);
-            backLeftMotor.setPower(backLeftPower);
+            frontLeftMotor.setPower(-frontLeftPower);
+            backLeftMotor.setPower(-backLeftPower);
             frontRightMotor.setPower(frontRightPower);
             backRightMotor.setPower(backRightPower);
-
             telemetry.update();
         }
     }
