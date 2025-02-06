@@ -35,13 +35,14 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
 
     GoBildaPinpointDriver odo;
 
-
+    //basic function for moving the linear slides up
     public void linSlidesUp(double power){
         linSlideL.setDirection(DcMotorSimple.Direction.FORWARD);
         linSlideR.setDirection(DcMotorSimple.Direction.REVERSE);
         linSlideL.setPower(power);
         linSlideR.setPower(power);
     }
+    //function for moving slides down
     public void linSlidesDown(double power){
         linSlideL.setDirection(DcMotorSimple.Direction.REVERSE);
         linSlideR.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -49,6 +50,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         linSlideR.setPower(power);
 
     }
+    //function to keep the slides level
 
     public void linSlidesStay(){
         linSlideL.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -56,7 +58,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         linSlideL.setPower(0.07);
         linSlideR.setPower(0.07);
     }
-
+    // old function for moving the slides up and down
     public void LINEAR_SLIDE_DRIVE(float distance_in_in, double power) {
         float ticksPerInch = 450.149432158f;
         float f_ticks = ticksPerInch * distance_in_in;
@@ -98,7 +100,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
             telemetry.update();
         }
     }
-
+    //function to convert an angle from radians to degrees
     public double angleWrap(double radians) {
         while (radians > Math.PI) {
             radians -= 2 * Math.PI;
@@ -110,6 +112,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         // keep in mind that the result is in radians
         return angle;
     }
+    // function to drive forward
     public void driveForwards(double power){
         leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -120,6 +123,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         leftFront.setPower(-power);
         rightBack.setPower(-power);
     }
+    // function to control the robots distance from an object
 
     public void controlDistance(double distance, double power){
         telemetry.addData("range", String.format("%.01f cm", sensorRange.getDistance(DistanceUnit.CM)));
@@ -131,6 +135,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         }
         stopRobot();
     }
+    // function to turn left
     public void turnLeft(double power) {
         leftBack.setPower(power);
         rightFront.setPower(power);
@@ -142,6 +147,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
 
     }
+    // function to strafe right
 
     public void strafeRight(double power) {
         leftBack.setPower(power);
@@ -154,6 +160,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
     }
+    // function to strafe right at a diagonal
     public void strafeRightAndDiagonal(double power) {
         leftBack.setPower(power/2);
         rightFront.setPower(-power/2);
@@ -165,6 +172,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
 
     }
+    // function to turn left while still moving forward
 
     public void softTurnLeft(double power) {
         leftBack.setPower(power / 2);
@@ -172,6 +180,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         leftFront.setPower(power / 2);
         rightBack.setPower(power);
     }
+    // function to turn right while still moving forward
 
     public void softTurnRight(double power) {
         rightBack.setPower(power / 2);
@@ -180,7 +189,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         leftBack.setPower(power);
     }
 
-
+    // function for turning right
     public void turnRight(double power) {
         leftBack.setPower(power);
         rightFront.setPower(power);
@@ -192,13 +201,14 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
     }
-
+    // functino for stopping thr robot
     public void stopRobot() {
         leftBack.setPower(0);
         rightFront.setPower(0);
         leftFront.setPower(0);
         rightBack.setPower(0);
     }
+    // yet another functino to drive forward
 
     public void driveForward(double power){
         leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -210,7 +220,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         leftFront.setPower(-power);
         rightBack.setPower(-power);
     }
-
+    // function to drive backward
     public void driveBackwardCorrection(double angle, double power, int distance, double pos) {
         String turn = "";
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -221,6 +231,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         telemetry.addData("turn", turn);
         telemetry.update();
     }
+    // function to drive forward
 
     public void driveForwardCorrection(double angle, double power, int distance, double pos) {
         String turn = "";
@@ -233,7 +244,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         telemetry.addData("turn", turn);
         telemetry.update();
     }
-
+    // function to turn an angle
     public void turnDegrees(double nAngle, double power) {
         while (true) {
             Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
@@ -249,7 +260,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         }
         stopRobot();
     }
-
+    // this is a function to drive forward a set number of mm forward - and slow down at halfway
     public void driveDistanceForward(double power, int distance, double xPlace) {
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -259,6 +270,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         rightFront.setPower(power);
         leftFront.setPower(power);
         rightBack.setPower(power);
+        // setting stuff
         if (xPlace > distance) {
             if (xPlace > distance / 2) {
                 leftBack.setPower(power);
@@ -274,6 +286,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
                 rightBack.setPower(power / 2);
                 telemetry.update();
             }
+            // slowing down at half
         } else {
             leftBack.setPower(0);
             rightFront.setPower(0);
@@ -281,6 +294,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
             rightBack.setPower(0);
         }
     }
+    // driving forward for a set amount of mm
 
     public void driveForwardXIncrease(double power, int newPos) {
         double angle;
@@ -299,9 +313,10 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         stopRobot();
         telemetry.update();
     }
-
+    // this function utilizes the motor encoders to move the linear slides up while driving forward a set amount
     public void driveForwardWithLinAndSlideUp(double drivePower, int newPos, double slidePower, double inches){
         double angle;
+        // making the linear slides run using the encoders
         linSlideL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         linSlideL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -309,11 +324,13 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         linSlideR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+        // setting the ticks
         float ticksPerInch = 450.149432158f;
         float f_ticks = (float) (ticksPerInch * inches);
         int ticks = Math.round(f_ticks);
         linSlideL.setTargetPosition(ticks);
         linSlideR.setTargetPosition(ticks);
+        // setting the drive forward function
 
         while (true) { // go forward for the initial hang
             Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
@@ -326,6 +343,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
                 linSlidesStay();
             }
             else {
+                // setting the slides to go up and stop
                 linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 linSlidesUp(slidePower);
@@ -342,6 +360,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         telemetry.update();
     }
 
+    // driving back a certain amount of mm
     public void driveBackwardXDecrease(double power, int newPos) {
         double angle;
         while (true) { // back up from the hang
@@ -359,7 +378,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         stopRobot();
         telemetry.update();
     }
-
+    // strafing right a certain amount of mm
     public void strafeRightYIncrease(double power, int newPos) {
         double angle;
         while (true) { // strafe to the blocks place
@@ -380,6 +399,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         stopRobot();
         telemetry.update();
     }
+    // attempting to strafe right at a diagonal a certain amount
     public void strafeRightYIncreaseAndDiagonal(double power, int newPos) {
         double angle;
         while (true) { // strafe to the blocks place
@@ -401,8 +421,10 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         telemetry.update();
     }
 
+    // this strafes right while moving the slides down using the motor encoders
     public void strafeRightYIncreaseSlideDown(double power, int newPos, double slidePower, double slidePlace) {
         double angle;
+        // setting the motors to use the encoders
         linSlideL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         linSlideL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -410,11 +432,15 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         linSlideR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+        // making them use ticks
+
         float ticksPerInch = 450.149432158f;
         float f_ticks = (float) (ticksPerInch * slidePlace);
         int ticks = Math.round(f_ticks);
         linSlideL.setTargetPosition(ticks);
         linSlideR.setTargetPosition(ticks);
+
+        // having the odometry to strafe right a set distance
         while (true) { // strafe to the blocks place
             Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
             String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
@@ -427,6 +453,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
                 linSlidesStay();
             }
             else {
+                // having the slides move a set distance
                 linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 linSlidesUp(-slidePower);
@@ -444,7 +471,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         telemetry.update();
     }
 
-
+    // function for strafing left a certain amount of mm
     public void strafeLeftYDecrease(double power, int newPos){
         double angle;
         while (true) { // strafe over to the hanging thing
@@ -465,9 +492,12 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         stopRobot();
         telemetry.update();
     }
+    // strafing left while moving the slides up - this is to get to the submersible
 
     public void strafeLeftYDecreaseSlideUp(double power, int newPos, double slidePower, double inches){
         double angle;
+
+        // setting the motors to using encoders
 
         linSlideL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         linSlideL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -476,11 +506,15 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         linSlideR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+        // setting the ticks - so like we can actually control them
+
         float ticksPerInch = 450.149432158f;
         float f_ticks = (float) (ticksPerInch * inches);
         int ticks = Math.round(f_ticks);
         linSlideL.setTargetPosition(ticks);
         linSlideR.setTargetPosition(ticks);
+
+        // the function to strafe left a certain amout of mm
 
         while (true) { // strafe over to the hanging thing
             Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
@@ -492,6 +526,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
                 linSlidesStay();
             }
             else {
+                // moving the slides a set amount
                 linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 linSlidesUp(slidePower);
@@ -508,10 +543,12 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         stopRobot();
         telemetry.update();
     }
+    // using logic to move the angle towards 0 when facing right a bit
 
     public void angleCorrectionFacingZeroRight(double power) {
         double angle;
         while (true) { // angle correction
+            // setting the object
             Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
             String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
             telemetry.addData("Position", data);
@@ -520,6 +557,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
             if (angle < 2) {
                 break;
             }
+            // if the angle is > 2 then turn right until not
             turnRight(power);
             if (angle < 2) {
                 break;
@@ -529,9 +567,11 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         stopRobot();
     }
 
+    // setting to it faces zero no matter which sides they are on
     public void angleCorrectionFacingZeroBothSides(double power){
         double angle;
         while (true) { // angle correction
+            // setting the objects
             Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
             String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
             telemetry.addData("Position", data);
@@ -542,6 +582,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
                 if (angle < 2) {
                     break;
                 }
+                // if faced left turn right
                 turnRight(0.2);
                 if (angle < 2) {
                     break;
@@ -551,6 +592,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
                 if (angle > -2) {
                     break;
                 }
+                // if looking towards the right, turn left
                 turnLeft(0.2);
                 if (angle > -2) {
                     break;
@@ -563,10 +605,12 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         telemetry.update();
     }
 
+    // this function to turn around 180 degrees - only right though
     public void turnAroundRightZeroTo180(double power) {
         double angle;
         while (true) { // turn the 180 degrees
             Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+            // setting the object
             String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
             telemetry.addData("Position", data);
             angle = (angleWrap(odo.getHeading()));
@@ -574,6 +618,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
             if (angle < -172) {
                 break;
             }
+            // turning right until the conditions are met
             turnRight(power);
             if (angle < -172) {
                 break;
@@ -585,6 +630,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         stopRobot();
     }
 
+    //function to turn around no matter where you are facing
     public void turnAroundLogic180ToZero(double power) {
         double angle;
         while (true) { // turn the 180 degrees
@@ -598,6 +644,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
                 if (angle < 7) {
                     break;
                 }
+                // totally depends - if you are already facing right, continue
                 turnRight(power);
                 if (angle < 7) {
                     break;
@@ -607,6 +654,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
                 if (angle > -7) {
                     break;
                 }
+                // if already facing left, continue
                 turnLeft(power);
                 if (angle > -7) {
                     break;
@@ -618,6 +666,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
         telemetry.update();
         stopRobot();
     }
+    // this like if it has turneed around and you need to continue
 
     public void driveForwardXDecrease(double power, int newPos) {
         double angle;
