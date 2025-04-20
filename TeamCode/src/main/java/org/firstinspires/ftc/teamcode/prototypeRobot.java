@@ -139,7 +139,7 @@ public class prototypeRobot extends LinearOpMode {
             clawServo.setPosition(Servo.MIN_POSITION);
         }
         if(clawCount % 2 == 1){
-            clawServo.setPosition(Servo.MAX_POSITION);
+            clawServo.setPosition(0.5);
         }
     }
     // function to move the intake wrist up and down

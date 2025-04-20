@@ -746,7 +746,7 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
          */
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
-        clawServo.setPosition(Servo.MAX_POSITION);
+        clawServo.setPosition(Servo.MIN_POSITION);
         intakeWristServo.setPosition(Servo.MIN_POSITION);
         odo.resetPosAndIMU();
         double angle = angleWrap(odo.getHeading());
@@ -758,12 +758,12 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
             driveForwardWithLinAndSlideUp(0.4, 560, 1.0, 8); // going up to hang the specimen
             telemetry.update();
             LINEAR_SLIDE_DRIVE(2f, -0.7); // hanging the specimen
-            clawServo.setPosition(Servo.MAX_POSITION);
+            clawServo.setPosition(0.5);
             driveBackwardXDecrease(0.5, 562); // backing up from hanging
             clawServo.setPosition(Servo.MIN_POSITION);
             telemetry.update();
             sleep(333);
-            strafeRightYIncreaseSlideDown(0.7, 600, 1.0, -3.6);// strafing right to the first block
+            strafeRightYIncreaseSlideDown(0.7, 600, 1.0, -3.4);// strafing right to the first block
             clawWristServo.setPosition(1.0);
             clawWristServo.setPosition(Servo.MAX_POSITION);
             angleCorrectionFacingZeroBothSides(0.4);
@@ -786,17 +786,17 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
             angleCorrectionFacingZeroBothSides(0.1);
             controlDistance(37, 0.5); // going forward to hang the block
             LINEAR_SLIDE_DRIVE(3f, -0.7); // hanging the specimen
-            clawServo.setPosition(Servo.MAX_POSITION);
+            clawServo.setPosition(0.5);
             sleep(500);
             clawWristServo.setPosition(Servo.MIN_POSITION);
-            clawServo.setPosition(Servo.MAX_POSITION);
+            clawServo.setPosition(0.5);
             driveBackwardXDecrease(0.4, 559); // backing up from hanging
             clawServo.setPosition(Servo.MIN_POSITION);
-            strafeRightYIncreaseSlideDown(0.8, 900, 1.0, -3.75);
+            strafeRightYIncreaseSlideDown(0.8, 900, 1.0, -3.4);
             turnAroundRightZeroTo180(0.6);
-            clawServo.setPosition(Servo.MAX_POSITION);
+            clawServo.setPosition(0.5);
             clawWristServo.setPosition(Servo.MAX_POSITION);
-            controlDistance(48, 0.6); // grabbing the block
+            controlDistance(46, 0.6); // grabbing the block
             stopRobot();
             clawServo.setPosition(0.0); // grabbing block
             sleep(500);
@@ -807,10 +807,10 @@ public class newSpecimenSideLinAndDrive extends LinearOpMode {
             angleCorrectionFacingZeroBothSides(0.1);
             controlDistance(37, 0.5); // going forward to hang the block
             LINEAR_SLIDE_DRIVE(3f, -0.7); // hanging the specimen
-            clawServo.setPosition(Servo.MAX_POSITION);
+            clawServo.setPosition(0.5);
             sleep(500);
             clawWristServo.setPosition(Servo.MIN_POSITION);
-            clawServo.setPosition(Servo.MAX_POSITION);
+            clawServo.setPosition(0.5);
             driveBackwardXDecrease(0.3, 559); // backing up from hanging
 
         }

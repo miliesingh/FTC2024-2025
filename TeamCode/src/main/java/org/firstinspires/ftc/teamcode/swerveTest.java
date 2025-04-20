@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@TeleOp(name = "swerveBlueTest", group = "TeleOp2024")
+@TeleOp(name = "swerveMainTest", group = "TeleOp2024")
 public class swerveTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
@@ -31,7 +31,7 @@ public class swerveTest extends LinearOpMode {
         // Adjust the orientation parameters to match your robot
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
-                RevHubOrientationOnRobot.UsbFacingDirection.UP));
+                RevHubOrientationOnRobot.UsbFacingDirection.LEFT));
         // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
         imu.initialize(parameters);
 
@@ -68,15 +68,10 @@ public class swerveTest extends LinearOpMode {
             double frontRightPower = (rotY - rotX - rx) / denominator;
             double backRightPower = (rotY + rotX - rx) / denominator;
 
-            telemetry.addData("Y, X, RX, Yaw", "%4.2f, %4.2f, %4.2f, %4.2f", y, x, rx, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
-            telemetry.update();
-
-            frontLeftMotor.setPower(frontLeftPower);
-            backLeftMotor.setPower(backLeftPower);
-            frontRightMotor.setPower(frontRightPower);
-            backRightMotor.setPower(backRightPower);
-
-            telemetry.update();
+            frontLeftMotor.setPower(-frontLeftPower);
+            backLeftMotor.setPower(-backLeftPower);
+            frontRightMotor.setPower(-frontRightPower);
+            backRightMotor.setPower(-backRightPower);
         }
     }
 }

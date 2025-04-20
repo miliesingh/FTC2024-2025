@@ -14,9 +14,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 import java.util.Locale;
 
-// This is for the sample side - puts 2 samples into the bottom basket
-@Autonomous(name="newBasketSideFunction(ONLY IF THE OTHER TEAM CAN DO 5)", group="Auto2024")
-public class newSampleSide extends LinearOpMode {
+// This is far side Blue
+@Autonomous(name="specimenSide14+", group="Auto2024")
+public class specimenSide14 extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor rightFront = null;
     private DcMotor leftFront = null;
@@ -27,11 +27,38 @@ public class newSampleSide extends LinearOpMode {
     private DcMotor linSlideL = null;
     private Servo clawWristServo = null;
     private Servo clawServo = null;
+
     private Servo intakeWristServo = null;
+
+    private DistanceSensor sensorRange;
 
 
     GoBildaPinpointDriver odo;
-    // functions for moving the slides up
+
+    //basic function for moving the linear slides up
+    public void linSlidesUp(double power){
+        linSlideL.setDirection(DcMotorSimple.Direction.FORWARD);
+        linSlideR.setDirection(DcMotorSimple.Direction.REVERSE);
+        linSlideL.setPower(power);
+        linSlideR.setPower(power);
+    }
+    //function for moving slides down
+    public void linSlidesDown(double power){
+        linSlideL.setDirection(DcMotorSimple.Direction.REVERSE);
+        linSlideR.setDirection(DcMotorSimple.Direction.FORWARD);
+        linSlideL.setPower(power);
+        linSlideR.setPower(power);
+
+    }
+    //function to keep the slides level
+
+    public void linSlidesStay(){
+        linSlideL.setDirection(DcMotorSimple.Direction.FORWARD);
+        linSlideR.setDirection(DcMotorSimple.Direction.REVERSE);
+        linSlideL.setPower(0.07);
+        linSlideR.setPower(0.07);
+    }
+    // old function for moving the slides up and down
     public void LINEAR_SLIDE_DRIVE(float distance_in_in, double power) {
         float ticksPerInch = 450.149432158f;
         float f_ticks = ticksPerInch * distance_in_in;
@@ -73,8 +100,7 @@ public class newSampleSide extends LinearOpMode {
             telemetry.update();
         }
     }
-
-    // makes the angles convert from radians to regular
+    //function to convert an angle from radians to degrees
     public double angleWrap(double radians) {
         while (radians > Math.PI) {
             radians -= 2 * Math.PI;
@@ -86,8 +112,30 @@ public class newSampleSide extends LinearOpMode {
         // keep in mind that the result is in radians
         return angle;
     }
-    //just a function to turn left - sets power and direction
+    // function to drive forward
+    public void driveForwards(double power){
+        leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setPower(-power);
+        rightFront.setPower(-power);
+        leftFront.setPower(-power);
+        rightBack.setPower(-power);
+    }
+    // function to control the robots distance from an object
 
+    public void controlDistance(double distance, double power){
+        telemetry.addData("range", String.format("%.01f cm", sensorRange.getDistance(DistanceUnit.CM)));
+        double theDistance = sensorRange.getDistance(DistanceUnit.CM);
+        while (theDistance > distance){
+            theDistance = sensorRange.getDistance(DistanceUnit.CM);
+            driveForwards(power);
+            telemetry.update();
+        }
+        stopRobot();
+    }
+    // function to turn left
     public void turnLeft(double power) {
         leftBack.setPower(power);
         rightFront.setPower(power);
@@ -99,19 +147,21 @@ public class newSampleSide extends LinearOpMode {
         rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
 
     }
-    // just a function to strafe right - sets direction and power
+    // function to strafe right
+
     public void strafeRight(double power) {
-        leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBack.setPower(power);
         rightFront.setPower(power);
         leftFront.setPower(power);
         rightBack.setPower(power);
-    }
+        leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
-    public void strafeRightAndDiagonalUp(double power) {
+    }
+    // function to strafe right at a diagonal
+    public void strafeRightAndDiagonal(double power) {
         leftBack.setPower(power/2);
         rightFront.setPower(-power/2);
         leftFront.setPower(-power);
@@ -122,19 +172,7 @@ public class newSampleSide extends LinearOpMode {
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
 
     }
-
-    public void strafeRightAndDiagonalDown(double power) {
-        leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftBack.setPower(power);
-        rightFront.setPower(power);
-        leftFront.setPower(power/2);
-        rightBack.setPower(power/2);
-    }
-
-    // function so I don't have to stop moving forward while turning
+    // function to turn left while still moving forward
 
     public void softTurnLeft(double power) {
         leftBack.setPower(power / 2);
@@ -142,14 +180,16 @@ public class newSampleSide extends LinearOpMode {
         leftFront.setPower(power / 2);
         rightBack.setPower(power);
     }
-    // function so I don't have to stop moving forward while turning
+    // function to turn right while still moving forward
+
     public void softTurnRight(double power) {
         rightBack.setPower(power / 2);
         leftFront.setPower(power);
         rightFront.setPower(power / 2);
         leftBack.setPower(power);
     }
-    // function to turn right - sets power and direction
+
+    // function for turning right
     public void turnRight(double power) {
         leftBack.setPower(power);
         rightFront.setPower(power);
@@ -161,21 +201,26 @@ public class newSampleSide extends LinearOpMode {
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
     }
-    // function to stop the robot
+    // functino for stopping thr robot
     public void stopRobot() {
         leftBack.setPower(0);
         rightFront.setPower(0);
         leftFront.setPower(0);
         rightBack.setPower(0);
     }
-    // function to drive forward - just sets power
-    public void driveForward(double power) {
-        leftBack.setPower(power);
-        rightFront.setPower(power);
-        leftFront.setPower(power);
-        rightBack.setPower(power);
+    // yet another functino to drive forward
+
+    public void driveForward(double power){
+        leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setPower(-power);
+        rightFront.setPower(-power);
+        leftFront.setPower(-power);
+        rightBack.setPower(-power);
     }
-    // function to drive backward - direction and power
+    // function to drive backward
     public void driveBackwardCorrection(double angle, double power, int distance, double pos) {
         String turn = "";
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -186,7 +231,7 @@ public class newSampleSide extends LinearOpMode {
         telemetry.addData("turn", turn);
         telemetry.update();
     }
-    // function to drive forward - sets power and direction
+    // function to drive forward
 
     public void driveForwardCorrection(double angle, double power, int distance, double pos) {
         String turn = "";
@@ -195,15 +240,14 @@ public class newSampleSide extends LinearOpMode {
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
         driveForward(-power);
+
         telemetry.addData("turn", turn);
         telemetry.update();
-
     }
-    // function to turn a set number of degrees
+    // function to turn an angle
     public void turnDegrees(double nAngle, double power) {
         while (true) {
             Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-            // sets object
             String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
             telemetry.addData("Position", data);
             double angle = (angleWrap(odo.getHeading()));
@@ -211,15 +255,13 @@ public class newSampleSide extends LinearOpMode {
             turnRight(power);
             if (Math.abs(angle) > nAngle) {
                 break;
-                // if the absolute value of the angle is greater than the new one - stop
             }
             telemetry.update();
         }
         stopRobot();
     }
-    // drive forward and slow down to half speed when at half the distance
+    // this is a function to drive forward a set number of mm forward - and slow down at halfway
     public void driveDistanceForward(double power, int distance, double xPlace) {
-        // setting direction and power
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -228,7 +270,7 @@ public class newSampleSide extends LinearOpMode {
         rightFront.setPower(power);
         leftFront.setPower(power);
         rightBack.setPower(power);
-        // if the distance is still greater, then go at the same speed
+        // setting stuff
         if (xPlace > distance) {
             if (xPlace > distance / 2) {
                 leftBack.setPower(power);
@@ -237,7 +279,6 @@ public class newSampleSide extends LinearOpMode {
                 rightBack.setPower(power);
                 telemetry.update();
             }
-            // if its less then half, then go at half speed
             if (xPlace < distance / 2) {
                 leftBack.setPower(power / 2);
                 rightFront.setPower(power / 2);
@@ -245,27 +286,25 @@ public class newSampleSide extends LinearOpMode {
                 rightBack.setPower(power / 2);
                 telemetry.update();
             }
+            // slowing down at half
         } else {
-            // emergency stop
             leftBack.setPower(0);
             rightFront.setPower(0);
             leftFront.setPower(0);
             rightBack.setPower(0);
         }
     }
-    // bunch of functions for driving distances
+    // driving forward for a set amount of mm
+
     public void driveForwardXIncrease(double power, int newPos) {
         double angle;
         while (true) { // go forward for the initial hang
             Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-            // setting the object
             String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
             telemetry.addData("Position", data);
-            // setting the telemetry
             angle = (angleWrap(odo.getHeading()));
             odo.bulkUpdate();
-            driveForwardCorrection(angle, power, 500, pos.getPosition().x);
-            // driving forward until get to the new distance
+            driveForward(power);
             if (pos.getPosition().x >= newPos) {
                 break;
             }
@@ -274,76 +313,60 @@ public class newSampleSide extends LinearOpMode {
         stopRobot();
         telemetry.update();
     }
-    // drive forward for sideways
-    public void driveForwardYIncrease(double power, int newPos) {
+    // this function utilizes the motor encoders to move the linear slides up while driving forward a set amount
+    public void driveForwardWithLinAndSlideUp(double drivePower, int newPos, double slidePower, double inches){
         double angle;
+        // making the linear slides run using the encoders
+        linSlideL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linSlideL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linSlideR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linSlideR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        // setting the ticks
+        float ticksPerInch = 450.149432158f;
+        float f_ticks = (float) (ticksPerInch * inches);
+        int ticks = Math.round(f_ticks);
+        linSlideL.setTargetPosition(ticks);
+        linSlideR.setTargetPosition(ticks);
+        // setting the drive forward function
+
         while (true) { // go forward for the initial hang
             Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-            // setting the object
             String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
             telemetry.addData("Position", data);
-            // setting telemetry
             angle = (angleWrap(odo.getHeading()));
             odo.bulkUpdate();
-            driveForwardCorrection(angle, power, 500, pos.getPosition().x);
-            if (pos.getPosition().y >= newPos) {
+            driveForward(drivePower);
+            if((linSlideR.getCurrentPosition() >= linSlideR.getTargetPosition()) && linSlideL.getCurrentPosition() >= (linSlideL.getTargetPosition())){
+                linSlidesStay();
+            }
+            else {
+                // setting the slides to go up and stop
+                linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                linSlidesUp(slidePower);
+                linSlideL.setTargetPosition(ticks);
+                linSlideR.setTargetPosition(ticks);
+            }
+            if (pos.getPosition().x >= newPos) {
                 break;
             }
             telemetry.update();
         }
+        linSlidesStay();
         stopRobot();
         telemetry.update();
     }
-    // driving forward in the other direction sideways
-    public void driveForwardYDecrease(double power, int newPos) {
-        double angle;
-        while (true) { // go forward for the initial hang
-            Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-            //setting the object
-            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-            telemetry.addData("Position", data);
-            // making the telemetry
-            angle = (angleWrap(odo.getHeading()));
-            odo.bulkUpdate();
-            driveForwardCorrection(angle, power, 500, pos.getPosition().x);
-            if (pos.getPosition().y <= newPos) {
-                break;
-            }
-            telemetry.update();
-        }
-        stopRobot();
-        telemetry.update();
-    }
-    // driving forward in the backwards direction
-    public void driveForwardXDecrease(double power, int newPos){
-        double angle;
-        while (true) { // forward to basket
-            Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-            // setting the object
-            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-            telemetry.addData("Position", data);
-            // creating the telemetry
-            angle = (angleWrap(odo.getHeading()));
-            odo.bulkUpdate();
-            driveForwardCorrection(angle, power, 500, pos.getPosition().x);
-            // driving forward until the robot is less than where it is supposed to be
-            if (pos.getPosition().x <= newPos) {
-                break;
-            }
-            telemetry.update();
-        }
-        stopRobot();
-        telemetry.update();
-    }
-    // driving backwards function
+
+    // driving back a certain amount of mm
     public void driveBackwardXDecrease(double power, int newPos) {
         double angle;
-        while (true) {
+        while (true) { // back up from the hang
             Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-            // created the new object
             String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
             telemetry.addData("Position", data);
-            // updating the telemetry
             angle = (angleWrap(odo.getHeading()));
             odo.bulkUpdate();
             driveBackwardCorrection(angle, -power, 590, pos.getPosition().x);
@@ -355,40 +378,19 @@ public class newSampleSide extends LinearOpMode {
         stopRobot();
         telemetry.update();
     }
-    // driving backwards in the sideways
-    public void driveBackwardYDecrease(double power, int newPos) {
+    // strafing right a certain amount of mm
+    public void strafeRightYIncrease(double power, int newPos) {
         double angle;
-        while (true) { // back up from the hang
+        while (true) { // strafe to the blocks place
             Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-            // setting the object
             String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
             telemetry.addData("Position", data);
-            // creating the telemetry
             angle = (angleWrap(odo.getHeading()));
             odo.bulkUpdate();
-            driveBackwardCorrection(angle, -power, 590, pos.getPosition().x);
-            // driving backwards until the targeted position is hit
-            if (pos.getPosition().y <= newPos) {
+            if (pos.getPosition().y >= newPos) {
                 break;
             }
-            telemetry.update();
-        }
-        stopRobot();
-        telemetry.update();
-    }
-    // function for driving backwards with a y increase
-    public void driveBackwardYIncrease(double power, int newPos) {
-        double angle;
-        while (true) { // back up from the hang
-            Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-            // creating the object
-            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-            telemetry.addData("Position", data);
-            // setting the telemetry
-            angle = (angleWrap(odo.getHeading()));
-            odo.bulkUpdate();
-            driveBackwardCorrection(angle, -power, 590, pos.getPosition().x);
-            //driving the robot into its position
+            strafeRight(power);
             if (pos.getPosition().y >= newPos) {
                 break;
             }
@@ -397,20 +399,20 @@ public class newSampleSide extends LinearOpMode {
         stopRobot();
         telemetry.update();
     }
-    //driving backwards where the x is increasing
-    public void driveBackwardXIncrease(double power, int newPos){
+    // attempting to strafe right at a diagonal a certain amount
+    public void strafeRightYIncreaseAndDiagonal(double power, int newPos) {
         double angle;
-        while (true) { // back up from basket
+        while (true) { // strafe to the blocks place
             Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-            // creating the object
             String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
             telemetry.addData("Position", data);
-            // setting the telemetry
             angle = (angleWrap(odo.getHeading()));
             odo.bulkUpdate();
-            driveBackwardCorrection(angle, -power, 590, pos.getPosition().x);
-            // driving into the position
-            if (pos.getPosition().x >= newPos) {
+            if (pos.getPosition().y >= newPos) {
+                break;
+            }
+            strafeRightAndDiagonal(power);
+            if (pos.getPosition().y >= newPos) {
                 break;
             }
             telemetry.update();
@@ -418,21 +420,69 @@ public class newSampleSide extends LinearOpMode {
         stopRobot();
         telemetry.update();
     }
-    // function for strafing left
+
+    // this strafes right while moving the slides down using the motor encoders
+    public void strafeRightYIncreaseSlideDown(double power, int newPos, double slidePower, double slidePlace) {
+        double angle;
+        // setting the motors to use the encoders
+        linSlideL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linSlideL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linSlideR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linSlideR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        // making them use ticks
+
+        float ticksPerInch = 450.149432158f;
+        float f_ticks = (float) (ticksPerInch * slidePlace);
+        int ticks = Math.round(f_ticks);
+        linSlideL.setTargetPosition(ticks);
+        linSlideR.setTargetPosition(ticks);
+
+        // having the odometry to strafe right a set distance
+        while (true) { // strafe to the blocks place
+            Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+            telemetry.addData("Position", data);
+            telemetry.addData("Slides Current Position", linSlideR.getCurrentPosition());
+            telemetry.addData("Slides Target Position", linSlideR.getTargetPosition());
+            angle = (angleWrap(odo.getHeading()));
+            odo.bulkUpdate();
+            if((linSlideR.getCurrentPosition() <= linSlideR.getTargetPosition()) && linSlideL.getCurrentPosition() <= (linSlideL.getTargetPosition())){
+                linSlidesStay();
+            }
+            else {
+                // having the slides move a set distance
+                linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                linSlidesUp(-slidePower);
+                linSlideL.setTargetPosition(ticks);
+                linSlideR.setTargetPosition(ticks);
+            }
+            strafeRight(power);
+            if (pos.getPosition().y >= newPos) {
+                break;
+            }
+            telemetry.update();
+        }
+        linSlidesStay();
+        stopRobot();
+        telemetry.update();
+    }
+
+    // function for strafing left a certain amount of mm
     public void strafeLeftYDecrease(double power, int newPos){
         double angle;
         while (true) { // strafe over to the hanging thing
             Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-            // creating the object
             String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
             telemetry.addData("Position", data);
-            // setting the telemetry
             angle = (angleWrap(odo.getHeading()));
             odo.bulkUpdate();
             if (pos.getPosition().y <= newPos) {
                 break;
             }
-            // strafing until the condition is met
             strafeRight(-power);
             if (pos.getPosition().y <= newPos) {
                 break;
@@ -442,205 +492,109 @@ public class newSampleSide extends LinearOpMode {
         stopRobot();
         telemetry.update();
     }
-    // function for strafing left sideways
-    public void strafeLeftXDecrease(double power, int newPos){
-        double angle;
-        while (true) { // strafe over to the hanging thing
-            Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-            // creating the object
-            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-            telemetry.addData("Position", data);
-            // setting the telemetry
-            angle = (angleWrap(odo.getHeading()));
-            odo.bulkUpdate();
-            if (pos.getPosition().x <= newPos) {
-                break;
-            }
-            // strafing until the condition is met
-            strafeRight(-power);
-            if (pos.getPosition().x <= newPos) {
-                break;
-            }
-            telemetry.update();
-        }
-        stopRobot();
-        telemetry.update();
-    }
-    // strafing left sideways the other way
-    public void strafeLeftXIncrease(double power, int newPos){
-        double angle;
-        while (true) { // strafe over to the hanging thing
-            Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-            // creating the object
-            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-            telemetry.addData("Position", data);
-            // setting the telemetry
-            angle = (angleWrap(odo.getHeading()));
-            odo.bulkUpdate();
-            if (pos.getPosition().x >= newPos) {
-                break;
-            }
-            // strafing until the condition is met
-            strafeRight(-power);
-            if (pos.getPosition().x >= newPos) {
-                break;
-            }
-            telemetry.update();
-        }
-        stopRobot();
-        telemetry.update();
-    }
-    // angle correction code for facing zero
+    // strafing left while moving the slides up - this is to get to the submersible
 
+    public void strafeLeftYDecreaseSlideUp(double power, int newPos, double slidePower, double inches){
+        double angle;
+
+        // setting the motors to using encoders
+
+        linSlideL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linSlideL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linSlideR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linSlideR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        // setting the ticks - so like we can actually control them
+
+        float ticksPerInch = 450.149432158f;
+        float f_ticks = (float) (ticksPerInch * inches);
+        int ticks = Math.round(f_ticks);
+        linSlideL.setTargetPosition(ticks);
+        linSlideR.setTargetPosition(ticks);
+
+        // the function to strafe left a certain amout of mm
+
+        while (true) { // strafe over to the hanging thing
+            Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+            telemetry.addData("Position", data);
+            angle = (angleWrap(odo.getHeading()));
+            odo.bulkUpdate();
+            if((linSlideR.getCurrentPosition() >= linSlideR.getTargetPosition()) && linSlideL.getCurrentPosition() >= (linSlideL.getTargetPosition())){
+                linSlidesStay();
+            }
+            else {
+                // moving the slides a set amount
+                linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                linSlidesUp(slidePower);
+                linSlideL.setTargetPosition(ticks);
+                linSlideR.setTargetPosition(ticks);
+            }
+            strafeRight(-power);
+            if (pos.getPosition().y <= newPos) {
+                break;
+            }
+            telemetry.update();
+        }
+        linSlidesStay();
+        stopRobot();
+        telemetry.update();
+    }
+    // using logic to move the angle towards 0 when facing right a bit
+
+    public void angleCorrectionFacingZeroRight(double power) {
+        double angle;
+        while (true) { // angle correction
+            // setting the object
+            Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
+            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
+            telemetry.addData("Position", data);
+            angle = (angleWrap(odo.getHeading()));
+            odo.bulkUpdate();
+            if (angle < 2) {
+                break;
+            }
+            // if the angle is > 2 then turn right until not
+            turnRight(power);
+            if (angle < 2) {
+                break;
+            }
+            telemetry.update();
+        }
+        stopRobot();
+    }
+
+    // setting to it faces zero no matter which sides they are on
     public void angleCorrectionFacingZeroBothSides(double power){
         double angle;
-        while (true) {
-            // angle correction function
+        while (true) { // angle correction
+            // setting the objects
             Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-            // create a new object for the while loop because the odometry doesn't update outside of the while loop
             String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-            // the odometry data to put on the driver hub
             telemetry.addData("Position", data);
-            // creation of the new object inside the while loop
             angle = (angleWrap(odo.getHeading()));
-            // if the angle is greater than 180, it goes to negatives - like 350 is coverted to -10
             odo.bulkUpdate();
-            if(angle > 0) {
-                // note - to the left is positive
+            if (angle > 0) {
+
                 if (angle < 2) {
                     break;
                 }
-                // the reason I have two is because the program needs to stop exactly
-                turnRight(power);
-                //if it's left - turn right to correct
+                // if faced left turn right
+                turnRight(0.2);
                 if (angle < 2) {
-                    break;
-                }
-            } else if (angle <= 0 ) {
-                // to the right is negative
-                if (angle > -2){
-                    break;
-                }
-                turnLeft(power);
-                //make the robot correct itself
-                if(angle > -2){
-                    break;
-                }
-            } else {
-                break;
-            }
-                /* the reason everything is 2 off from 0 is because I need to account
-                        for the momentum of the robot
-
-                 */
-            telemetry.update();
-        }
-        stopRobot();
-        telemetry.update();
-    }
-    // angle correction code for facing 180
-    public void angleCorrectionLogicFacing180BothSides(double power){
-        double angle;
-        while (true) { // angle correction
-            Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-            // creating the object
-            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-            telemetry.addData("Position", data);
-            // setting the telemetry
-            angle = (angleWrap(odo.getHeading()));
-            odo.bulkUpdate();
-            if(angle > 0) {
-                // if its facing right, turn left
-                if (angle > 178) {
-                    break;
-                }
-                turnLeft(power);
-                if (angle > 178) {
-                    break;
-                }
-            } else if (angle < 0 ) {
-                // if its facing left turn right
-                if (angle < -178){
-                    break;
-                }
-                turnRight(power);
-                if(angle < -178){
-                    break;
-                }
-            } else {
-                break;
-            }
-            telemetry.update();
-        }
-        stopRobot();
-        telemetry.update();
-    }
-    // this is for angle correction to 90 degrees
-    public void angleCorrectionLogicFacingneg90BothSides(double power){
-        double angle;
-        while (true) { // angle correction
-            Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-            // creating the object
-            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-            telemetry.addData("Position", data);
-            // setting telemetry
-            angle = (angleWrap(odo.getHeading()));
-            odo.bulkUpdate();
-            if(angle < -90) {
-                // if its facing right turn left
-                if (angle > -89) {
-                    break;
-                }
-                turnLeft(power);
-                if (angle > -89) {
-                    break;
-                }
-            } else if (angle > -90 ) {
-                // if its facing left turn right
-                if (angle < -91){
-                    break;
-                }
-                turnRight(power);
-                if(angle < 91){
-                    break;
-                }
-            } else {
-                break;
-            }
-            telemetry.update();
-        }
-        stopRobot();
-        telemetry.update();
-    }
-    // this is another facing 180 - but its designed for more power
-    public void turnAroundLogicZeroTo180(double power){
-        double angle;
-        while (true) { // turn the 180 degrees
-            Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-            // creating the object
-            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-            telemetry.addData("Position", data);
-            // setting telemetry
-            angle = (angleWrap(odo.getHeading()));
-            odo.bulkUpdate();
-            if (angle > 0){
-                // facing right turn left
-
-                if (angle > 173) {
-                    break;
-                }
-                turnLeft(power);
-                if (angle > 173) {
                     break;
                 }
 
             } else if (angle < 0) {
-                // facing left turn right
-                if (angle < -173) {
+                if (angle > -2) {
                     break;
                 }
-                turnRight(power);
-                if (angle < -173) {
+                // if looking towards the right, turn left
+                turnLeft(0.2);
+                if (angle > -2) {
                     break;
                 }
             } else {
@@ -650,123 +604,79 @@ public class newSampleSide extends LinearOpMode {
         stopRobot();
         telemetry.update();
     }
-    // strafing right while turned around
-    public void strafeRightYDecrease(double power, int newPos){
+
+    // this function to turn around 180 degrees - only right though
+    public void turnAroundRightZeroTo180(double power) {
         double angle;
-        while (true) { // strafe to basket
+        while (true) { // turn the 180 degrees
             Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-            // creating the object
+            // setting the object
             String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
             telemetry.addData("Position", data);
-            // setting telemetry
             angle = (angleWrap(odo.getHeading()));
             odo.bulkUpdate();
-            strafeRight(power);
-            // strafing until reaches the new and correct position
-            if (pos.getPosition().y <= newPos) {
+            if (angle < -172) {
+                break;
+            }
+            // turning right until the conditions are met
+            turnRight(power);
+            if (angle < -172) {
                 break;
             }
             telemetry.update();
         }
+
+
         stopRobot();
-        telemetry.update();
-    }
-    // strafing left while turned around
-    public void strafeLeftYIncrease(double power, int newPos){
-        double angle;
-        while (true) { // strafe around first block
-            Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-            // creating the object
-            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-            telemetry.addData("Position", data);
-            // setting the telemetry
-            angle = (angleWrap(odo.getHeading()));
-            odo.bulkUpdate();
-            strafeRight(-power);
-            // strafing until reaches position
-            if (pos.getPosition().y >= newPos) {
-                break;
-            }
-            telemetry.update();
-        }
-        stopRobot();
-        telemetry.update();
-    }
-    // strafing right while turned around
-    public void strafeRightYIncrease(double power, int newPos){
-        double angle;
-        while (true) { // strafe around first block
-            Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-            // creating the object
-            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-            telemetry.addData("Position", data);
-            // setting telemetry
-            angle = (angleWrap(odo.getHeading()));
-            odo.bulkUpdate();
-            strafeRight(power);
-            // strafing until reaches position
-            if (pos.getPosition().y >= newPos) {
-                break;
-            }
-            telemetry.update();
-        }
-        stopRobot();
-        telemetry.update();
     }
 
-    public void strafeRightYIncreaseAndDiagonalUp(double power, int newPos){
+    //function to turn around no matter where you are facing
+    public void turnAroundLogic180ToZero(double power) {
         double angle;
-        while (true) { // strafe around first block
+        while (true) { // turn the 180 degrees
             Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-            // creating the object
             String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
             telemetry.addData("Position", data);
-            // setting telemetry
             angle = (angleWrap(odo.getHeading()));
             odo.bulkUpdate();
-            strafeRightAndDiagonalUp(power);
-            // strafing until reaches position
-            if (pos.getPosition().y >= newPos) {
+            if (angle > 0) {
+
+                if (angle < 7) {
+                    break;
+                }
+                // totally depends - if you are already facing right, continue
+                turnRight(power);
+                if (angle < 7) {
+                    break;
+                }
+
+            } else if (angle < 0) {
+                if (angle > -7) {
+                    break;
+                }
+                // if already facing left, continue
+                turnLeft(power);
+                if (angle > -7) {
+                    break;
+                }
+            } else {
                 break;
             }
-            telemetry.update();
         }
-        stopRobot();
         telemetry.update();
+        stopRobot();
     }
-    public void strafeRightYIncreaseAndDiagonalDown(double power, int newPos){
+    // this like if it has turneed around and you need to continue
+
+    public void driveForwardXDecrease(double power, int newPos) {
         double angle;
-        while (true) { // strafe around first block
+        while (true) { // getting the block
             Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-            // creating the object
             String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
             telemetry.addData("Position", data);
-            // setting telemetry
             angle = (angleWrap(odo.getHeading()));
             odo.bulkUpdate();
-            strafeRightAndDiagonalDown(power);
-            // strafing until reaches position
-            if (pos.getPosition().y >= newPos) {
-                break;
-            }
-            telemetry.update();
-        }
-        stopRobot();
-        telemetry.update();
-    }
-    // strafing right while sideways
-    public void strafeRightXDecrease(double power, int newPos){
-        double angle;
-        while (true) { // strafe around first block
-            Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-            // creating the object
-            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-            telemetry.addData("Position", data);
-            //setting the telemetry
-            angle = (angleWrap(odo.getHeading()));
-            odo.bulkUpdate();
-            strafeRight(power);
-            // strafing until reaches position
+            driveForward(power);
             if (pos.getPosition().x <= newPos) {
                 break;
             }
@@ -775,27 +685,7 @@ public class newSampleSide extends LinearOpMode {
         stopRobot();
         telemetry.update();
     }
-    // strafing right while sideways - but the other way
-    public void strafeRightXIncrease(double power, int newPos){
-        double angle;
-        while (true) { // strafe around first block
-            Pose3D pos = new Pose3D(odo.getPosition().getPosition(), odo.getVelocity().getOrientation());
-            // creating the object
-            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getPosition().x, pos.getPosition().y, (angleWrap(odo.getHeading())));
-            telemetry.addData("Position", data);
-            // setting telemetry
-            angle = (angleWrap(odo.getHeading()));
-            odo.bulkUpdate();
-            strafeRight(power);
-            // strafing until reaches position
-            if (pos.getPosition().x >= newPos) {
-                break;
-            }
-            telemetry.update();
-        }
-        stopRobot();
-        telemetry.update();
-    }
+
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -822,9 +712,21 @@ public class newSampleSide extends LinearOpMode {
         linSlideR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         clawWristServo = hardwareMap.get(Servo.class, "clawWristServo");
         clawServo = hardwareMap.get(Servo.class, "clawServo");
+        sensorRange = hardwareMap.get(DistanceSensor.class, "distanceSensor");
         intakeWristServo = hardwareMap.get(Servo.class, "intakeWristServo");
+
         waitForStart();
         runtime.reset();
+
+        //setting encoders for the linear slides
+        linSlideL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linSlideL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linSlideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linSlideR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linSlideR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linSlideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
         odo.setOffsets(65.0, -130); //these are tuned for 3110-0002-0001 Product Insight #1
 
         /*
@@ -845,51 +747,74 @@ public class newSampleSide extends LinearOpMode {
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
         clawServo.setPosition(Servo.MIN_POSITION);
+        intakeWristServo.setPosition(Servo.MIN_POSITION);
         odo.resetPosAndIMU();
         double angle = angleWrap(odo.getHeading());
         if (opModeIsActive()) {
-            intakeWristServo.setPosition(Servo.MIN_POSITION);
+            clawServo.setPosition(Servo.MIN_POSITION);
             clawWristServo.setPosition(Servo.MAX_POSITION);
             odo.bulkUpdate();
-            sleep(1000);
-            strafeRightYIncrease(0.3, 160);// away from the wall
-            driveForwardXIncrease(0.3, 340);// driving to the basket
-            LINEAR_SLIDE_DRIVE(8f, 0.9);
-            turnDegrees(45, -0.3); // turning to put the block into the basket
-            clawServo.setPosition(0.5);
             sleep(333);
-            angleCorrectionFacingZeroBothSides(0.3);// going back to zero
-            LINEAR_SLIDE_DRIVE(8f, -0.9);// linear slides down
+            driveForwardWithLinAndSlideUp(0.378, 560, 1.0, 8); // going up to hang the specimen
             telemetry.update();
-            angleCorrectionFacingZeroBothSides(0.3);
-            clawServo.setPosition(Servo.MIN_POSITION);
-            clawWristServo.setPosition(Servo.MIN_POSITION);
-            turnDegrees(88, 0.3);
-            strafeRightXIncrease(0.3, 162);
-            angleCorrectionLogicFacingneg90BothSides(0.2);// lining up with the first block
+            LINEAR_SLIDE_DRIVE(2f, -0.7); // hanging the specimen
             clawServo.setPosition(0.5);
-            driveForwardYDecrease(0.3, -550);// driving to get the first block
+            driveBackwardXDecrease(0.5, 562); // backing up from hanging
             clawServo.setPosition(Servo.MIN_POSITION);
-            sleep(500);
+            telemetry.update();
+            sleep(333);
+            strafeRightYIncreaseSlideDown(0.7, 600, 1.0, -3.4);// strafing right to the first block
+            clawWristServo.setPosition(1.0);
             clawWristServo.setPosition(Servo.MAX_POSITION);
-            intakeWristServo.setPosition(Servo.MIN_POSITION);
-            driveBackwardYIncrease(0.3, -90); // has the first block
-            LINEAR_SLIDE_DRIVE(8f, 0.7);
-            angleCorrectionFacingZeroBothSides(0.3);// turning back
-            turnDegrees(35, -0.3); //turning to put the block into the basket
+            angleCorrectionFacingZeroBothSides(0.4);
+            driveForwardWithLinAndSlideUp(0.7, 1100, 0, 0); // driving over the first block
+            strafeRightYIncrease(0.7, 840); // strafing over the first block
+            driveBackwardXDecrease(0.8, 310); // pushing the first block into the player zone
+            driveForwardXIncrease(0.8, 440); // going out of the human player zone
+            turnAroundRightZeroTo180(0.5); // turning around
+            sleep(500);
+            telemetry.update();
+            clawServo.setPosition(1); // opening the claw
+            controlDistance(46, 0.6); // grabbing the block
+            stopRobot();
+            clawServo.setPosition(0.0); // grabbing block
+            sleep(500);
+            clawWristServo.setPosition(1.0);// putting the thing up
+            LINEAR_SLIDE_DRIVE(2f, 1.0);
+            turnAroundLogic180ToZero(0.6);
+            strafeLeftYDecreaseSlideUp(0.9, 50, 1.0, 4.5); // going back over to hang the block
+            angleCorrectionFacingZeroBothSides(0.1);
+            controlDistance(37, 0.5); // going forward to hang the block
+            LINEAR_SLIDE_DRIVE(3f, -0.7); // hanging the specimen
             clawServo.setPosition(0.5);
             sleep(500);
-            angleCorrectionFacingZeroBothSides(0.3); // turning back around
-            intakeWristServo.setPosition(Servo.MIN_POSITION);
+            clawWristServo.setPosition(Servo.MIN_POSITION);
+            clawServo.setPosition(0.5);
+            driveBackwardXDecrease(0.4, 559); // backing up from hanging
             clawServo.setPosition(Servo.MIN_POSITION);
-            LINEAR_SLIDE_DRIVE(6f, -0.9);// just so i can see the telemetry
-            strafeRightAndDiagonalDown(1);
-            telemetry.update();
-            sleep(2700);
-            intakeWristServo.setPosition(Servo.MIN_POSITION);
+            strafeRightYIncreaseSlideDown(0.8, 900, 1.0, -3.4);
+            turnAroundRightZeroTo180(0.6);
+            clawServo.setPosition(0.5);
+            clawWristServo.setPosition(Servo.MAX_POSITION);
+            controlDistance(46, 0.6); // grabbing the block
             stopRobot();
+            clawServo.setPosition(0.0); // grabbing block
+            sleep(500);
+            clawWristServo.setPosition(1.0);// putting the thing up
+            LINEAR_SLIDE_DRIVE(2f, 1.0);
+            turnAroundLogic180ToZero(0.6);
+            strafeLeftYDecreaseSlideUp(0.9, 20, 1.0, 4.5); // going back over to hang the block
+            angleCorrectionFacingZeroBothSides(0.1);
+            controlDistance(37, 0.5); // going forward to hang the block
+            LINEAR_SLIDE_DRIVE(3f, -0.7); // hanging the specimen
+            clawServo.setPosition(0.5);
+            sleep(500);
+            clawWristServo.setPosition(Servo.MIN_POSITION);
+            clawServo.setPosition(0.5);
+            driveBackwardXDecrease(0.3, 559); // backing up from hanging
 
         }
+
 
     }
 }
