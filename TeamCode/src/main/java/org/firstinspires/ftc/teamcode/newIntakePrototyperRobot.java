@@ -4,16 +4,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
-@TeleOp(name="prototypeRobot", group="Linear Opmode")
-public class prototypeRobot extends LinearOpMode {
+@TeleOp(name="main+Intake", group="Linear Opmode")
+public class newIntakePrototyperRobot extends LinearOpMode {
     private DcMotor leftFront = null;
     private DcMotor leftBack = null;
     private DcMotor rightFront = null;
@@ -21,7 +18,6 @@ public class prototypeRobot extends LinearOpMode {
     private DcMotor linSlideR = null;
     private DcMotor linSlideL = null;
 
-    private DistanceSensor intakeDistance;
     private ServoImplEx intakeArmServo = null;
 
     PwmControl.PwmRange armRange = new PwmControl.PwmRange(1000, 2000);
@@ -31,9 +27,13 @@ public class prototypeRobot extends LinearOpMode {
     private Servo clawServo = null;
     private Servo clawWristServo = null;
 
+    private Servo intakeSweeper = null;
+
+    int intakeSweeperCount = 0;
+
     int intakeArmServoCount = 0;
     int intakeServoCount = 0;
-    int intakeWristCount = 1 ;
+    int intakeWristCount = 0 ;
     int clawCount = 0;
     int clawWristServoCount = 0;
 
@@ -81,6 +81,15 @@ public class prototypeRobot extends LinearOpMode {
             telemetry.update();
         }
 
+    }
+
+    public void moveSweeper(){
+        if (intakeSweeperCount%2 == 1){
+            intakeSweeper.setPosition(Servo.MAX_POSITION);
+        }
+        if (intakeSweeperCount%2 == 0){
+            intakeSweeper.setPosition(Servo.MIN_POSITION);
+        }
     }
     // preset to move the slides to the blocks height on the wall
     public void moveSlideToPosition(){
@@ -149,10 +158,10 @@ public class prototypeRobot extends LinearOpMode {
     }
     // function to move the intake wrist up and down
     public void intakeWristServoControl(){
-        if(intakeWristCount % 2 == 1){
+        if(intakeWristCount % 2 == 0){
             intakeWristServo.setPosition(Servo.MAX_POSITION);
         }
-        if(intakeWristCount % 2 == 0){
+        if(intakeWristCount % 2 == 1){
             intakeWristServo.setPosition(Servo.MIN_POSITION);
         }
 
@@ -176,7 +185,7 @@ public class prototypeRobot extends LinearOpMode {
         intakeServo = hardwareMap.get(Servo.class, "intakeServo");
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         clawWristServo = hardwareMap.get(Servo.class, "clawWristServo");
-        intakeDistance = hardwareMap.get(DistanceSensor.class, "intakeDistance");
+        intakeSweeper = hardwareMap.get(Servo.class, "sweeper");
 
 
         leftBack.setDirection(DcMotor.Direction.FORWARD);
@@ -239,7 +248,6 @@ public class prototypeRobot extends LinearOpMode {
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
             telemetry.addData("intake wrust", intakeWristCount);
-            telemetry.addData("disance", intakeDistance.getDistance(DistanceUnit.INCH));
             telemetry.update();
 
             if(gamepad1.right_trigger > 0)
@@ -284,7 +292,7 @@ public class prototypeRobot extends LinearOpMode {
                 // if neither are touched, then the intake stays where it is
                 intakeArmServo.setPosition(0.5);
             }
-            if(gamepad2.right_bumper && intakeDistance.getDistance(DistanceUnit.INCH) > 1.5){
+            if(gamepad2.right_bumper){
                 // intake is on
                 intakeServo.setPosition(1.0);
             }
@@ -295,11 +303,6 @@ public class prototypeRobot extends LinearOpMode {
             if(gamepad2.left_bumper == false && gamepad2.right_bumper == false){
                 // if neither are touched the intake doesn't move
                 intakeServo.setPosition(0.5);
-            }
-            if(intakeDistance.getDistance(DistanceUnit.INCH) < 2 && !gamepad2.left_bumper && intakeDistance.getDistance(DistanceUnit.INCH) >0.2){
-                intakeServo.setPosition(0.5);
-                intakeWristCount=2;
-                intakeWristServoControl();
             }
             if(gamepad1.a){
                 // opening and closing the claw
@@ -330,6 +333,13 @@ public class prototypeRobot extends LinearOpMode {
                 linSlideL.setPower(1);
                 linSlideR.setPower(1);
                 sleep(999999999);
+            }
+            if(gamepad2.b){
+                intakeSweeperCount++;
+                moveSweeper();
+                while (gamepad2.b){
+                    intakeSweeperCount+=0;
+                }
             }
 
         }
